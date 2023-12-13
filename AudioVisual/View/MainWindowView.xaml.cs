@@ -18,15 +18,6 @@ namespace AudioVisual
 
             _viewModel = new MainWindowViewModel(new AudioStreamProvider(), new AudioStreamPlayer(), new Canvas());
             DataContext = _viewModel;
-
-            //var inspector = InspectorFactory.Create();
-            //var viewAspect = CreateProcessing(inspector);
-
-            //SongsList.ItemsSource = viewAspect.SongsLibrary.Value.Library;
-
-
-
-            //inspector.Show();
         }
 
         private void Dispatcher_ShutdownStarted(object sender, EventArgs e)
