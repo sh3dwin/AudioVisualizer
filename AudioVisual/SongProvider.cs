@@ -16,7 +16,7 @@ namespace AudioVisual
     {
         public AudioLibrary GetAllSongs(string path = null)
         {
-            var directory = path ?? "Audio/";
+            var directory = path ?? "Resources/Songs/";
             List<SoundSource> songs = new List<SoundSource>();
             foreach (string file in Directory.EnumerateFiles(directory))
             {
