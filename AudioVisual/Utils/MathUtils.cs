@@ -12,7 +12,7 @@ namespace AudioVisual
             List<int> splits = new List<int>();
             while (step < n)
             {
-                var value = (int)Math.Pow(coefficient, step);
+                var value = (int)Math.Pow(coefficient, step + 1);
                 splits.Add(value);
                 step++;
             }
@@ -27,6 +27,13 @@ namespace AudioVisual
             double smallerThan = Math.Exp(Math.Log(size - n) / n);
 
             return BinarySearchCoefficient(largerThan, smallerThan, n, size);
+        }
+        public static double FastSin(double x)
+        {
+            const double B = 4.0 / Math.PI;
+            const double C = -4 / (Math.PI * Math.PI);
+
+            return -(B * x + C * x * ((x < 0) ? -x : x));
         }
 
         public static double BinarySearchCoefficient(double largerThan, double smallerThan, int n, int size)

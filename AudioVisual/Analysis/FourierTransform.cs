@@ -1,35 +1,21 @@
-﻿using CSCore.DSP;
-using CSCore.Utils;
-using System;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
+﻿using System;
+using AudioVisual.Analysis;
+using NAudio.Dsp;
+using NAudio.Wave;
 
 namespace AudioVisual
 {
-    public static class FourierTransform
+    public class FourierTransformAnalyzer : IAudioAnalyzer
     {
-        public static int Size = 2048;
-        public static Complex[] FFT(byte[] buffer, Canvas canvas)
+        public Complex[] GetFrequencySpectrum(WaveBuffer buffer, int m)
         {
-            var complexBuffer = new Complex[buffer.Length];
-            for (int i = 0; i < buffer.Length; i++)
-                complexBuffer[i] = new Complex((int)buffer[i]);
-            FastFourierTransformation.Fft(complexBuffer, 2);
-            foreach (var complex in complexBuffer) {
-                Console.WriteLine(complex.Real + " " + complex.Imaginary);
+            var audioData = SoundWaveUtils.CreateAndInitializeComplexArray(buffer, m);
+            FastFourierTransform.FFT(true, m, audioData);
 
-            }
-                
-            return complexBuffer;
-        }
-        private static void DrawRectangle(Canvas canvas, float frequency, float amplitude)
-        {
-            Rectangle rec = new Rectangle();
-            rec.Width = Math.Abs(frequency);
-            rec.Height = Math.Abs(100 * amplitude);
-            rec.Fill = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-            canvas.Children.Add(rec);
+            // Take only the first 1/4 elements, rest is duplicate
+            var result = new Complex[(int)(audioData.Length * 0.25)];
+            Array.Copy(audioData, result, result.Length);
+            return result;
         }
     }
 }

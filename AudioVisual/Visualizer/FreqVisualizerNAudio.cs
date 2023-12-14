@@ -202,5 +202,10 @@ namespace AudioVisual
 
             _capture.Dispose();
         }
+
+        public Canvas Draw(Complex[] frequencySpectrum)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

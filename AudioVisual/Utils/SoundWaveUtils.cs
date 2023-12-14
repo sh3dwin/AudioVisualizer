@@ -11,9 +11,10 @@ namespace AudioVisual
     {
         public static Complex[] CreateAndInitializeComplexArray(WaveBuffer buffer, int M)
         {
-            int len = buffer.FloatBuffer.Length / 8;
+            int len = (int)Math.Pow(2, M);
 
-            Complex[] values = new Complex[(int)Math.Pow(2, M) +len];
+            Complex[] values = new Complex[len];
+            //Complex[] values = new Complex[len];
             for (int i = 0; i < len; i++)
             {
                 values[i].Y = 0;

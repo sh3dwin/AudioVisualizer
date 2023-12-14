@@ -7,36 +7,34 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using AudioVisual.Audio;
 using AudioVisual.Visualizer;
+using System.Diagnostics;
 
 namespace AudioVisual
 {
-    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
+    public class PlaybackViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly ISongProvider _songProvider;
         private SoundSource _selectedSong;
         private AudioStreamPlayer _player;
-        private LoopbackAudioProcessor processor;
         private DispatcherTimer _timer;
         private IVisualizer _visualizer;
         private float _elapsedTime = 0;
         private bool _isPlaying;
         private Complex[] buffer = new Complex[2048];
         private Canvas _canvas;
-        public MainWindowViewModel(ISongProvider songProvider, AudioStreamPlayer player, Canvas canvas)
+        public PlaybackViewModel(ISongProvider songProvider, AudioStreamPlayer player, Canvas canvas)
         {
             _player = player;
             _songProvider = songProvider;
             //_visualizer = new FreqVisualizerNAudio(canvas);
-            _visualizer = new WaveVisualizer(canvas, 48000);
-            processor = new LoopbackAudioProcessor();
+            _visualizer = new WaveVisualizer(canvas, 0);
 
             Play = new PlaybackCommand(PlaySong, CanPlay);
             Stop = new PlaybackCommand(StopSong, CanStop);
 
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(33); // Set the interval to 1 second
+            _timer.Interval = TimeSpan.FromMilliseconds(1); // Set the interval to 1 second
             _timer.Tick += Timer_Tick;
 
             // Start the timer
@@ -146,13 +144,12 @@ namespace AudioVisual
         {
             ElapsedTimePercentage = (float)_player.Position.TotalMilliseconds / (float)_player.Length.TotalMilliseconds;
 
-            Visualization = _visualizer.Draw(new FourierTransformAnalyzer().GetFrequencySpectrum(processor.GetAudioData(), 12));
+            Visualization = _visualizer.Draw(new FourierTransformAnalyzer().GetFrequencySpectrum(null, 12));
         }
 
         public void Dispose()
         {
             _player?.Dispose();
-            processor.Dispose();
         }
     }
 }

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using NAudio.Dsp;
 
 namespace AudioVisual.Visualizer
 {
     public interface IVisualizer
     {
-        public Canvas Draw();
-        public void Dispose();
+        public Canvas Draw(Complex[] frequencySpectrum);
     }
 }

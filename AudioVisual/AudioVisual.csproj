@@ -127,18 +127,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Analysis\IAudioAnalyzer.cs" />
     <Compile Include="Audio\AudioLibrary.cs" />
     <Compile Include="Audio\AudioLibraryFactory.cs" />
     <Compile Include="Analysis\FourierTransform.cs" />
+    <Compile Include="Audio\IAudioProcessor.cs" />
+    <Compile Include="Audio\LoopbackAudioProcessor.cs" />
     <Compile Include="Utils\ComplexArray.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Compile Include="ViewModel\PlaybackViewModel.cs" />
     <Compile Include="PercentageToWidthConverter.cs" />
     <Compile Include="SongProvider.cs" />
     <Compile Include="Audio\SoundSource.cs" />
-    <Compile Include="View\VisualizationView.xaml.cs">
-      <DependentUpon>VisualizationView.xaml</DependentUpon>
+    <Compile Include="View\PlaybackView.xaml.cs">
+      <DependentUpon>PlaybackView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\VisualizationViewModel.cs" />
     <Compile Include="Visualizer\FrequencyToColorMapper.cs" />
     <Compile Include="Visualizer\FreqVisualizerNAudio.cs" />
     <Compile Include="Utils\MathUtils.cs" />
@@ -161,7 +164,7 @@
       <DependentUpon>MainWindowView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\VisualizationView.xaml">
+    <Page Include="View\PlaybackView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

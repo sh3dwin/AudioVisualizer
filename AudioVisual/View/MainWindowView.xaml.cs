@@ -36,7 +36,6 @@ namespace AudioVisual
 
         private async void NowPlayingView_Loaded(object sender, RoutedEventArgs e)
         {
-            await _viewModel.LoadAsync();
         }
     }
 }
