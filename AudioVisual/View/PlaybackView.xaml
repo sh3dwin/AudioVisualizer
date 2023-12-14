@@ -6,8 +6,12 @@
              xmlns:local="clr-namespace:AudioVisual"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:PercentageToWidthConverter x:Key="PercentageToWidthConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -15,20 +19,20 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
-
-        <ListView x:Name="SongsList" Grid.Row="0" Grid.Column="0" 
+        <StackPanel Grid.Row="1"  Orientation="Vertical">
+            <ListView x:Name="SongsList" Grid.Row="1" Grid.Column="0" 
                   ItemsSource="{Binding Songs}" 
                   SelectedItem="{Binding SelectedSong}"
                   DisplayMemberPath="SongName"></ListView>
-
-        <ContentControl Grid.Column="1" Grid.Row="0" Content="{Binding Visualization}"/>
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+        </StackPanel>
+        <ContentControl Grid.Column="1" Grid.Row="1" Content="{Binding Visualization}"/>
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Grid x:Name="ElapsedTimeBar" Grid.Row="0" VerticalAlignment="Stretch" Background="Black" >
+            <Grid x:Name="ElapsedTimeBar" Grid.Row="1" VerticalAlignment="Stretch" Background="Black" >
                 <Rectangle Fill="DarkSlateBlue" HorizontalAlignment="Left">
                     <Rectangle.Width>
                         <MultiBinding Converter="{StaticResource PercentageToWidthConverter}">
@@ -39,13 +43,13 @@
                 </Rectangle>
                 <TextBlock Text="{Binding ElapsedTimePercentage}" HorizontalAlignment="Left"/>
             </Grid>
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="1" Background="Black" Height="Auto">
-                    <TextBlock Text="{Binding SelectedSong.SongName}" 
+                    <TextBlock Text="{Binding SelectedSong.SongName}"
                            FontSize="20"
                            Foreground="White"
                            VerticalAlignment="Center"

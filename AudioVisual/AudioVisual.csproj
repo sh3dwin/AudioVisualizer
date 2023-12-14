@@ -134,11 +134,16 @@
     <Compile Include="Audio\IAudioProcessor.cs" />
     <Compile Include="Audio\LoopbackAudioProcessor.cs" />
     <Compile Include="Utils\ComplexArray.cs" />
-    <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Compile Include="ViewModel\LoopbackViewModel.cs" />
+    <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\PlaybackViewModel.cs" />
     <Compile Include="PercentageToWidthConverter.cs" />
     <Compile Include="SongProvider.cs" />
     <Compile Include="Audio\SoundSource.cs" />
+    <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="View\LoopbackView.xaml.cs">
+      <DependentUpon>LoopbackView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PlaybackView.xaml.cs">
       <DependentUpon>PlaybackView.xaml</DependentUpon>
     </Compile>
@@ -149,7 +154,11 @@
     <Compile Include="Visualizer\IVisualizer.cs" />
     <Compile Include="Visualizer\RenderSettings.cs" />
     <Compile Include="Visualizer\WaveVisualizer.cs" />
-    <Page Include="View\MainWindowView.xaml">
+    <Page Include="View\LoopbackView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -160,8 +169,8 @@
     <Compile Include="Audio\AudioStreamPlayer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="View\MainWindowView.xaml.cs">
-      <DependentUpon>MainWindowView.xaml</DependentUpon>
+    <Compile Include="View\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\PlaybackView.xaml">
