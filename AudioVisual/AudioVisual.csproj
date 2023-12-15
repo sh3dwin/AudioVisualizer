@@ -81,6 +81,7 @@
     <Compile Include="Audio\IAudioProcessor.cs" />
     <Compile Include="Audio\LoopbackAudioProcessor.cs" />
     <Compile Include="Command\DelegateCommand.cs" />
+    <Compile Include="DataStructures\BandPassFilteredWave.cs" />
     <Compile Include="Processor\FrequencySpectrumAggregator.cs" />
     <Compile Include="Processor\IProcessor.cs" />
     <Compile Include="Utils\ComplexArray.cs" />
@@ -103,8 +104,8 @@
     <Compile Include="Utils\SoundWaveUtils.cs" />
     <Compile Include="Visualizer\IVisualizer.cs" />
     <Compile Include="Visualizer\RenderSettings.cs" />
-    <Compile Include="Visualizer\WaveVisualizer.cs" />
-    <Compile Include="Processor\FrequencyIntoWaveAggregator.cs" />
+    <Compile Include="Visualizer\SubBandFilterBankVisualizer.cs" />
+    <Compile Include="Processor\SubBandFilterBank.cs" />
     <Page Include="View\LoopbackView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

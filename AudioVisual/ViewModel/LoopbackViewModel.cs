@@ -9,8 +9,8 @@ namespace AudioVisual
     {
     private readonly IAudioProcessor _recorder;
     private readonly DispatcherTimer _timer;
-    private readonly WaveVisualizer _visualizer;
-    private readonly FrequencyIntoWaveAggregator _processor;
+    private readonly SubBandFilterBankVisualizer _visualizer;
+    private readonly SubBandFilterBank _processor;
     private readonly FourierTransformAnalyzer _analyzer;
     private float _elapsedTime = 0;
     private int _samplesNumber = 200;
@@ -21,8 +21,8 @@ namespace AudioVisual
         this.LoadAsync();
         //_visualizer = new FreqVisualizerNAudio(canvas);
         _recorder = new LoopbackAudioProcessor();
-        _visualizer = new WaveVisualizer(canvas);
-        _processor = new FrequencyIntoWaveAggregator(_samplesNumber,_wavePartitions);
+        _visualizer = new SubBandFilterBankVisualizer(canvas);
+        _processor = new SubBandFilterBank(_samplesNumber,_wavePartitions);
         _analyzer = new FourierTransformAnalyzer();
 
         _timer = new DispatcherTimer
@@ -61,7 +61,7 @@ namespace AudioVisual
         set
         {
             _wavePartitions = value;
-            _processor.WavePartitionNumber = _wavePartitions;
+            _processor.BandPassCount = _wavePartitions;
             RaisePropertyChanged(nameof(WavePartitions));
         }
     }
@@ -70,9 +70,8 @@ namespace AudioVisual
     {
         var audioData = _recorder.GetAudioData();
         var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 12);
-        var summedWavesValues = _processor.GetSummedWaves(frequencySpectrum);
-        var hues = _processor.GetHues();
-        Visualization = _visualizer.Draw(summedWavesValues, hues);
+        var summedWavesValues = _processor.GetSubBandFilterBank(frequencySpectrum);
+        Visualization = _visualizer.Draw(summedWavesValues);
     }
 
     public override void Dispose()
