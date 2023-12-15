@@ -1,28 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
 
-namespace AudioVisual.View
+namespace AudioVisual
 {
     /// <summary>
     /// Interaction logic for LoopbackView.xaml
     /// </summary>
     public partial class LoopbackView : UserControl
     {
+        private LoopbackViewModel _viewModel;
         public LoopbackView()
         {
             InitializeComponent();
+            Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
+
+            _viewModel = new LoopbackViewModel(new Canvas());
+            DataContext = _viewModel;
+            Loaded += PlaybackView_Loaded; ;
+        }
+
+        private async void PlaybackView_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            await _viewModel.LoadAsync();
+        }
+
+        private void Dispatcher_ShutdownStarted(object sender, System.EventArgs e)
+        {
+            _viewModel.Dispose();
         }
     }
 }

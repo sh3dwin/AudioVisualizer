@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AudioVisual.Command;
 
 namespace AudioVisual
 {
@@ -11,17 +12,23 @@ namespace AudioVisual
         {
             PlaybackViewModel = playbackViewModel;
             LoopbackViewModel = loopbackViewModel;
-            SelectedViewModel = playbackViewModel;
+            SelectedViewModel = loopbackViewModel;
+
+            SelectViewModelCommand = new DelegateCommand(SelectViewModel);
         }
 
-        public PlaybackViewModel PlaybackViewModel;
-        public LoopbackViewModel LoopbackViewModel;
+        public DelegateCommand SelectViewModelCommand { get; }
+
+        public PlaybackViewModel PlaybackViewModel { get; }
+        public LoopbackViewModel LoopbackViewModel { get; }
 
         public ViewModelBase? SelectedViewModel
         {
             get => _selectedViewModel;
             set
             {
+                if (_selectedViewModel is not null)
+                    _selectedViewModel.Dispose();
                 _selectedViewModel = value;
                 RaisePropertyChanged();
             }
@@ -29,12 +36,20 @@ namespace AudioVisual
 
         public override async Task LoadAsync()
         {
-            await SelectedViewModel.LoadAsync();
+            if (SelectedViewModel is not null)
+            {
+                await SelectedViewModel.LoadAsync();
+            }
         } 
         public void Dispose()
         {
             PlaybackViewModel.Dispose();
             LoopbackViewModel.Dispose();
+        }
+
+        private void SelectViewModel(object? parameter)
+        {
+            SelectedViewModel = parameter as ViewModelBase;
         }
 
 

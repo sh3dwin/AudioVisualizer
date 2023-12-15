@@ -1,31 +1,29 @@
 ﻿using AudioVisual.Audio;
-using AudioVisual.Visualizer;
-using SharpDX.Direct2D1;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace AudioVisual
 {
     public class LoopbackViewModel: ViewModelBase, IDisposable
     {
-    private readonly IAudioProcessor _processor;
+    private readonly IAudioProcessor _recorder;
     private readonly DispatcherTimer _timer;
-    private readonly IVisualizer _visualizer;
+    private readonly WaveVisualizer _visualizer;
+    private readonly FrequencyIntoWaveAggregator _processor;
+    private readonly FourierTransformAnalyzer _analyzer;
     private float _elapsedTime = 0;
+    private int _samplesNumber = 200;
+    private int _wavePartitions = 1;
     private Canvas _canvas;
     public LoopbackViewModel(Canvas canvas)
     {
         this.LoadAsync();
         //_visualizer = new FreqVisualizerNAudio(canvas);
-        _processor = new LoopbackAudioProcessor();
-        _visualizer = new WaveVisualizer(canvas, ((LoopbackAudioProcessor)_processor).SampleRate);
+        _recorder = new LoopbackAudioProcessor();
+        _visualizer = new WaveVisualizer(canvas);
+        _processor = new FrequencyIntoWaveAggregator(_samplesNumber,_wavePartitions);
+        _analyzer = new FourierTransformAnalyzer();
 
         _timer = new DispatcherTimer
         {
@@ -57,14 +55,29 @@ namespace AudioVisual
         }
     }
 
-    private void Timer_Tick(object sender, EventArgs e)
+    public int WavePartitions
     {
-        Visualization = _visualizer.Draw(new FourierTransformAnalyzer().GetFrequencySpectrum(_processor.GetAudioData(), 12));
+        get => _wavePartitions;
+        set
+        {
+            _wavePartitions = value;
+            _processor.WavePartitionNumber = _wavePartitions;
+            RaisePropertyChanged(nameof(WavePartitions));
+        }
     }
 
-    public void Dispose()
+    private void Timer_Tick(object sender, EventArgs e)
     {
-        _processor.Dispose();
+        var audioData = _recorder.GetAudioData();
+        var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 12);
+        var summedWavesValues = _processor.GetSummedWaves(frequencySpectrum);
+        var hues = _processor.GetHues();
+        Visualization = _visualizer.Draw(summedWavesValues, hues);
+    }
+
+    public override void Dispose()
+    {
+        _recorder.Dispose();
     }
 }
 }

@@ -1,157 +1,83 @@
-﻿using NAudio.Wave;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using AudioVisual.Visualizer;
-using NAudio.Dsp;
 
 namespace AudioVisual
 {
-    public class WaveVisualizer : IDisposable, IVisualizer
+    public class WaveVisualizer : IDisposable
     {
-        private Canvas _canvas;
+        private readonly Canvas _canvas;
 
-        private int _samples = 200;
-        private int _sampleRate;
-        private int _sampleSize;
-        private int _maxFrequency;
+        private int _samples;
         private double _segmentSize;
-
-        private Complex[] _fftValues;
 
         private int amplitudeScalingFactor = 400;
 
-        private double denom;
-
-        private double _binCount;
-        private double _binSize;
-
-        private double[] _finalWave;
-
-        private int _wavePartitionsNumber = 3;
-        private List<int> _wavePartitionsSplits;
-
-        public WaveVisualizer(Canvas canvas, int sampleRate)
+        public WaveVisualizer(Canvas canvas)
         {
             _canvas = canvas;
-            _sampleRate = sampleRate;
-            denom = 1.0 / sampleRate;
-            _maxFrequency = (int)(_sampleRate * 0.5);
-            _wavePartitionsSplits = MathUtils.SplitIntoNGeometricSeries(_wavePartitionsNumber, _maxFrequency);
         }
-
-        public Canvas Draw(Complex[] frequencySpectrum)
+        public Canvas Draw(List<List<double>> summedWaves, List<double> hues)
         {
             ClearCanvas();
 
-            // Get current width and height in case of resize
-            int windowHeight = (int)_canvas.ActualHeight;
-            int windowWidth = (int)_canvas.ActualWidth;
+            _samples = summedWaves[0].Count;
 
-            _segmentSize = windowWidth / (double)_samples;
+            _segmentSize = _canvas.ActualWidth / _samples;
 
-            if (windowHeight == 0 || windowWidth == 0)
-                return _canvas;
+            var numberOfWaves = summedWaves.Count;
+            var canvasLines = new List<Line>(_samples * (numberOfWaves) * 2);
 
-            _fftValues = frequencySpectrum;
-            _sampleSize = (int)Math.Ceiling((double)_fftValues.Length);
-            _finalWave = new double[_sampleSize];
+            // Distance from each separate wave line
+            var yStep = (int)_canvas.ActualHeight / (1 + numberOfWaves);
 
-            var splitLowerBound = 0;
-            for (int splitIndex = 0; splitIndex < _wavePartitionsNumber; splitIndex++)
+            for (int partitionIndex = 0; partitionIndex < numberOfWaves; partitionIndex++)
             {
-                
-                DrawSoundWave(splitLowerBound,
-                    splitLowerBound + _wavePartitionsSplits[splitIndex],
-                    new SolidColorBrush(Color.FromScRgb(1f, 1f, 0f, 0f)),
-                    splitIndex + 1);
-                splitLowerBound += _wavePartitionsSplits[splitIndex];
+                var summedValues = summedWaves[partitionIndex];
+                var color = FrequencyToColorMapper.ColorFromHSV(hues[partitionIndex], 1, 1);
+                var brush = new SolidColorBrush(color);
+                var offset = (partitionIndex + 1) * yStep;
+                var wave = DrawSoundWave(summedValues, brush, offset);
+                canvasLines.AddRange(wave);
             }
-            DrawWholeSoundWave(new SolidColorBrush(Color.FromScRgb(1f, 1f, 1f, 1f)));
+
+            foreach (var line in canvasLines)
+            {
+                _canvas.Children.Add(line);
+            }
 
             return this._canvas;
         }
-
-        public void ChangeWavePartitions(int partitionsNumber)
+        private List<Line> DrawSoundWave(IReadOnlyList<double> summedValues, SolidColorBrush color, double offset)
         {
-            _wavePartitionsNumber = partitionsNumber;
-            _wavePartitionsSplits = MathUtils.SplitIntoNGeometricSeries(_wavePartitionsNumber, _maxFrequency);
-        }
+            
+            var y1 = offset;
 
-        private void DrawSoundWave(double lowerFrequencyBoundary, double upperFrequencyBoundary, SolidColorBrush color, double yOffset)
-        {
-            var yStep= (int)_canvas.ActualHeight / (2 + _wavePartitionsNumber);
-            var offset = yOffset * yStep;
-            var y1 = (double)offset;
-            for (var i = 0; i < _samples; i++)
-            {
-                var sumOfAmplitudes = SumAllAmplitudesBetweenFrequencies(lowerFrequencyBoundary, upperFrequencyBoundary, i);
-
-                var line = new Line();
-                line.X1 = i * _segmentSize;
-                line.Y1 = y1;
-                line.X2 = (i + 1) * _segmentSize;
-                line.Y2 = sumOfAmplitudes * amplitudeScalingFactor + offset;
-                line.StrokeThickness = 3;
-                y1 = line.Y2;
-                line.Stroke = color;
-
-                _canvas.Children.Add(line);
-            }
-        }
-
-        private void DrawWholeSoundWave(SolidColorBrush color)
-        {
-            var yStep = (int)_canvas.ActualHeight / (2 + _wavePartitionsNumber);
-            var offset = (1 + _wavePartitionsNumber) * yStep;
-            var y1 = (double)offset;
-            for (var i = 0; i < _samples; i++)
+            var lines = new List<Line>(summedValues.Count);
+            for (var i = 0; i < summedValues.Count; i++)
             {
                 var line = new Line();
                 line.X1 = i * _segmentSize;
                 line.Y1 = y1;
                 line.X2 = (i + 1) * _segmentSize;
-                line.Y2 = _finalWave[i] * amplitudeScalingFactor + offset;
+                line.Y2 = summedValues[i] * amplitudeScalingFactor + offset;
                 line.StrokeThickness = 3;
                 y1 = line.Y2;
                 line.Stroke = color;
 
-                _canvas.Children.Add(line);
-            }
-        }
-        private double SumAllAmplitudesBetweenFrequencies(double lowerFrequencyBoundary, double upperFrequencyBoundary, int index)
-        {
-            _binCount = _sampleSize;
-            // frequency change from bin to bin
-            _binSize = _sampleRate / (_binCount * 2);
-            var size = (int)_canvas.ActualWidth / (double)_samples;
-            double frequency = lowerFrequencyBoundary;
-            var minFrequencyBin = lowerFrequencyBoundary / _binSize;
-            var maxFrequencyBin = upperFrequencyBoundary / _binSize;
-            var sumOfAmplitudes = 0.0;
-            var constant = 2 * Math.PI * index * size;
-            for (int i = (int)minFrequencyBin; i < maxFrequencyBin && i < _sampleSize; i++)
-            {
-                //Console.WriteLine($"Frequency is {frequency} at bin {i}, min frequency at {minFrequencyBin}, maximum at {maxFrequencyBin}");
-                sumOfAmplitudes += _fftValues[i].X * Math.Sin((constant * frequency + MathUtils.Argument(_fftValues[i])) * denom);
-                frequency += _binSize;
+                lines.Add(line);
             }
 
-            _finalWave[index] += sumOfAmplitudes;
-
-            return sumOfAmplitudes;
+            return lines;
         }
-
         private void ClearCanvas()
         {
             _canvas.Background = new SolidColorBrush(Color.FromRgb(10, 10, 10));
             _canvas.Children.Clear();
         }
-
-
-
         public void Dispose()
         {
         }

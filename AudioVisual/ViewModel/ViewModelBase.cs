@@ -1,10 +1,11 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace AudioVisual
 {
-    public class ViewModelBase : INotifyPropertyChanged
+    public class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -14,5 +15,9 @@ namespace AudioVisual
         }
 
         public virtual Task LoadAsync() => Task.CompletedTask;
+        public virtual void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

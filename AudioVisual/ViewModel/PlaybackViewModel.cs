@@ -6,6 +6,8 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using AudioVisual.Visualizer;
 using AudioVisual.Audio;
+using System.Diagnostics;
+using AudioVisual.Processor;
 
 namespace AudioVisual
 {
@@ -14,9 +16,11 @@ namespace AudioVisual
         private readonly ISongProvider _songProvider;
         private SoundSource _selectedSong;
         private readonly AudioStreamPlayer _player;
-        private readonly IAudioProcessor _processor;
+        private readonly IAudioProcessor _recorder;
         private readonly DispatcherTimer _timer;
-        private readonly IVisualizer _visualizer;
+        private readonly FreqVisualizerNAudio _visualizer;
+        private readonly FrequencySpectrumAggregator _processor;
+        private readonly FourierTransformAnalyzer _analyzer;
         private float _elapsedTime = 0;
         private bool _isPlaying;
         private Canvas _canvas;
@@ -26,8 +30,10 @@ namespace AudioVisual
             _songProvider = songProvider;
             this.LoadAsync();
             //_visualizer = new FreqVisualizerNAudio(canvas);
-            _processor = new LoopbackAudioProcessor();
-            _visualizer = new WaveVisualizer(canvas, ((LoopbackAudioProcessor)_processor).SampleRate);
+            _recorder = new LoopbackAudioProcessor();
+            _visualizer = new FreqVisualizerNAudio(canvas);
+            _processor = new FrequencySpectrumAggregator(100);
+            _analyzer = new FourierTransformAnalyzer();
 
             Play = new PlaybackCommand(PlaySong, CanPlay);
             Stop = new PlaybackCommand(StopSong, CanStop);
@@ -137,14 +143,17 @@ namespace AudioVisual
         private void Timer_Tick(object sender, EventArgs e)
         {
             ElapsedTimePercentage = (float)_player.Position.TotalMilliseconds / (float)_player.Length.TotalMilliseconds;
-
-            Visualization = _visualizer.Draw(new FourierTransformAnalyzer().GetFrequencySpectrum(_processor.GetAudioData(), 12));
+            var audioData = _recorder.GetAudioData(); 
+            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 12);
+            var summedWavesValues = _processor.GetAggregatedFrequencies(frequencySpectrum);
+            var hues = _processor.GetHues();
+            Visualization = _visualizer.Draw(summedWavesValues, hues);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _player?.Dispose();
-            _processor.Dispose();
+            _recorder.Dispose();
         }
     }
 }
