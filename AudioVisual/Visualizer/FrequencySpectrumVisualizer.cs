@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
-using AudioVisual.Visualizer;
+using AudioVisual.Utils;
 using NAudio.Dsp;
 
-namespace AudioVisual
+namespace AudioVisual.Visualizer
 {
     /*
      * Visualizer using frequencies
      */
-    class FreqVisualizerNAudio : IDisposable
+    public class FrequencySpectrumVisualizer : IDisposable
     {
         private Canvas canvas;
 
@@ -18,7 +18,7 @@ namespace AudioVisual
         private List<LinkedList<double>> _previousValues;
         private int _smoothingFactor = 10;
 
-        public FreqVisualizerNAudio(Canvas canvas)
+        public FrequencySpectrumVisualizer(Canvas canvas)
         {
             this.canvas = canvas;
             _previousValues = new List<LinkedList<double>>();

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AudioVisual
+namespace AudioVisual.Utils
 {
     public static class MathUtils
     {
@@ -12,7 +12,7 @@ namespace AudioVisual
             List<int> splits = new List<int>();
             while (step < n)
             {
-                var value = (int)Math.Ceiling(Math.Pow(coefficient, step + 1));
+                var value = (int)Math.Floor(Math.Pow(coefficient, step + 1));
                 splits.Add(value);
                 step++;
             }

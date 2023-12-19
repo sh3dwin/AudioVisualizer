@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using AudioVisual.DataStructures;
+using AudioVisual.Utils;
 using NAudio.Dsp;
 
-namespace AudioVisual
+namespace AudioVisual.Processor
 {
     public class SubBandFilterBank : IProcessor
     {
@@ -70,6 +71,12 @@ namespace AudioVisual
 
             var splitLowerBound = 0;
             var allFrequencyWindows = new List<BandPassFilteredWave>(_bandPassCount + 1);
+
+            // If the number of partitions is only one, return only the whole wave
+            if (BandPassCount == 1)
+            {
+                return new List<BandPassFilteredWave> { GetBandPassedWave(0, _bandPassSplits[0]) };
+            }
 
             for (var iSplit = 0; iSplit < _bandPassCount; iSplit++)
             {

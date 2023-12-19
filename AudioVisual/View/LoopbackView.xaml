@@ -6,8 +6,17 @@
              xmlns:local="clr-namespace:AudioVisual"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <ContentControl Content="{Binding Visualization}" Width="Auto" Height="Auto"/>
-        <Slider Width="200" Minimum="1" Maximum="10" Value="{Binding WavePartitions}"></Slider>
+        <Slider Width="200" Minimum="1" Maximum="10" 
+                Value="{Binding WavePartitions}"  
+                Visibility="{Binding WaveVisualization, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <StackPanel MinWidth="200" MaxWidth="200" HorizontalAlignment="Left">
+            <RadioButton GroupName="visualization" Foreground="AliceBlue"  IsChecked="{Binding FrequencyVisualization}">Frequency Visualization</RadioButton>
+            <RadioButton GroupName="visualization" Foreground="AliceBlue" IsChecked="{Binding WaveVisualization}">Wave Visualization</RadioButton>
+        </StackPanel>
     </Grid>
 </UserControl>

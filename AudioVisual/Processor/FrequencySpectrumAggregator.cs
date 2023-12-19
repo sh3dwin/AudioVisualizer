@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using AudioVisual.Utils;
 using NAudio.Dsp;
 
 namespace AudioVisual.Processor
@@ -44,9 +46,11 @@ namespace AudioVisual.Processor
         }
         public List<double> GetHues()
         {
-            var hueStep = 720.0 / SampleRate;
+            var frequencyFraction = 0.25;
+            var frequencyStep = (_maxFrequency * frequencyFraction) / Partitions;
+            var hueStep = 720.0 / (_maxFrequency * frequencyFraction);
             var splitLowerBound = 0;
-            var frequencyStep = SampleRate * 0.5 / Partitions;
+            
             var hues = new List<double>(Partitions);
             for (int i = 0; i < Partitions; i++)
             {
@@ -72,7 +76,8 @@ namespace AudioVisual.Processor
 
             for (int splitIndex = 0; splitIndex < Partitions; splitIndex++)
             {
-                var summedValues = GetMaxAmplitudeBetweenFrequencies(splitLowerBound, splitLowerBound + _frequencyPartitionsSplits[splitIndex]);
+                var summedValues = 
+                    GetMaxAmplitudeBetweenFrequencies(splitLowerBound, splitLowerBound + _frequencyPartitionsSplits[splitIndex]) * Math.Log(splitIndex + 1);
                 splitLowerBound += _frequencyPartitionsSplits[splitIndex];
 
                 summedFrequencies.Add(summedValues);

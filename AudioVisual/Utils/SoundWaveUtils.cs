@@ -5,7 +5,7 @@ using System.Windows.Shapes;
 using NAudio.Dsp;
 using NAudio.Wave;
 
-namespace AudioVisual
+namespace AudioVisual.Utils
 {
     public static class SoundWaveUtils
     {

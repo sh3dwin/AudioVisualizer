@@ -1,4 +1,7 @@
 ﻿using System.Windows.Controls;
+using AudioVisual.Processor;
+using AudioVisual.ViewModel;
+using AudioVisual.Visualizer;
 
 
 namespace AudioVisual
@@ -14,7 +17,7 @@ namespace AudioVisual
             InitializeComponent();
             Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
 
-            _viewModel = new PlaybackViewModel(new AudioStreamProvider(), new AudioStreamPlayer(), new Canvas());
+            _viewModel = new PlaybackViewModel(new Canvas());
             DataContext = _viewModel;
             Loaded += PlaybackView_Loaded; ;
         }

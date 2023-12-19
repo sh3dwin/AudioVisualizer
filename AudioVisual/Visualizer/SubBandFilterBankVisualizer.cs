@@ -4,9 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using AudioVisual.DataStructures;
-using AudioVisual.Visualizer;
 
-namespace AudioVisual
+namespace AudioVisual.Visualizer
 {
     public class SubBandFilterBankVisualizer : IDisposable
     {

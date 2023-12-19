@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AudioVisual.Command;
 
-namespace AudioVisual
+namespace AudioVisual.ViewModel
 {
-    public class MainViewModel : ViewModelBase, IDisposable
+    public class MainViewModel : ViewModelBase
     {
         private ViewModelBase _selectedViewModel;
 
@@ -41,7 +40,7 @@ namespace AudioVisual
                 await SelectedViewModel.LoadAsync();
             }
         } 
-        public void Dispose()
+        public override void Dispose()
         {
             PlaybackViewModel.Dispose();
             LoopbackViewModel.Dispose();

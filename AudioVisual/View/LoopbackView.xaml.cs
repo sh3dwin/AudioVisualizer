@@ -1,4 +1,7 @@
 ﻿using System.Windows.Controls;
+using AudioVisual.Processor;
+using AudioVisual.ViewModel;
+using AudioVisual.Visualizer;
 
 namespace AudioVisual
 {

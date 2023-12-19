@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using AudioVisual.Processor;
+using AudioVisual.ViewModel;
+using AudioVisual.Visualizer;
 
-namespace AudioVisual
+namespace AudioVisual.View
 {
     /// <summary>
     /// Interaction logic for MainView.xaml
@@ -15,9 +18,8 @@ namespace AudioVisual
             InitializeComponent();
             Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
 
-            _viewModel = new MainViewModel(new PlaybackViewModel(
-            new AudioStreamProvider(), new AudioStreamPlayer(), new Canvas()),
-                new LoopbackViewModel(new Canvas()));
+            _viewModel = new MainViewModel(
+                new PlaybackViewModel(new Canvas()), new LoopbackViewModel(new Canvas()));
             DataContext = _viewModel;
             Loaded += MainView_Loaded;
         }

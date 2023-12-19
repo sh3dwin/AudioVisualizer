@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSCore.Utils;
+﻿using CSCore.Utils;
 
-namespace AudioVisual
+namespace AudioVisual.Utils
 {
     public class ComplexArray
     {

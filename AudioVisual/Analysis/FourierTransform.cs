@@ -1,5 +1,6 @@
 ﻿using System;
 using AudioVisual.Analysis;
+using AudioVisual.Utils;
 using NAudio.Dsp;
 using NAudio.Wave;
 

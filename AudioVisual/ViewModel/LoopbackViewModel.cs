@@ -1,28 +1,44 @@
-﻿using AudioVisual.Audio;
-using System;
+﻿using System;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using AudioVisual.Audio;
+using AudioVisual.Processor;
+using AudioVisual.Visualizer;
 
-namespace AudioVisual
+namespace AudioVisual.ViewModel
 {
-    public class LoopbackViewModel: ViewModelBase, IDisposable
+    public class LoopbackViewModel: ViewModelBase
     {
-    private readonly IAudioProcessor _recorder;
     private readonly DispatcherTimer _timer;
-    private readonly SubBandFilterBankVisualizer _visualizer;
-    private readonly SubBandFilterBank _processor;
+    // recorder
+    private readonly IAudioProcessor _recorder;
+    // visualizers
+    private IProcessedFrequencySpectrumVisualizer _visualizer;
+    // analyzer
     private readonly FourierTransformAnalyzer _analyzer;
-    private float _elapsedTime = 0;
-    private int _samplesNumber = 200;
+    private readonly int _segmentCount = 200;
     private int _wavePartitions = 1;
     private Canvas _canvas;
+    private bool _waveVisualization = false;
     public LoopbackViewModel(Canvas canvas)
     {
-        this.LoadAsync();
-        //_visualizer = new FreqVisualizerNAudio(canvas);
+        _canvas = canvas;
+
         _recorder = new LoopbackAudioProcessor();
-        _visualizer = new SubBandFilterBankVisualizer(canvas);
-        _processor = new SubBandFilterBank(_samplesNumber,_wavePartitions);
+        WaveVisualization = false;
+        if (_waveVisualization)
+        {
+            _visualizer = new WaveVisualizer(
+                new SubBandFilterBank(_segmentCount, _wavePartitions),
+                new SubBandFilterBankVisualizer(_canvas));
+        }
+        else
+        {
+            _visualizer = new FrequencyVisualizer(
+                new FrequencySpectrumAggregator(_segmentCount),
+                new FrequencySpectrumVisualizer(canvas));
+        }
+
         _analyzer = new FourierTransformAnalyzer();
 
         _timer = new DispatcherTimer
@@ -45,15 +61,32 @@ namespace AudioVisual
         }
     }
 
-    public float ElapsedTimePercentage
+    public bool WaveVisualization
     {
-        get => _elapsedTime;
+        get => _waveVisualization;
         set
         {
-            _elapsedTime = value;
-            RaisePropertyChanged(nameof(ElapsedTimePercentage));
+            _waveVisualization = value;
+            FrequencyVisualization = !_waveVisualization;
+            
+            if (_waveVisualization)
+            {
+                _visualizer = new WaveVisualizer(
+                    new SubBandFilterBank(_segmentCount, _wavePartitions),
+                    new SubBandFilterBankVisualizer(_canvas));
+            }
+            else
+            {
+                _visualizer = new FrequencyVisualizer(
+                    new FrequencySpectrumAggregator(_segmentCount),
+                    new FrequencySpectrumVisualizer(_canvas));
+            }
+            RaisePropertyChanged(nameof(FrequencyVisualization));
+            RaisePropertyChanged(nameof(WaveVisualization));
         }
     }
+
+    public bool FrequencyVisualization { get; set; }
 
     public int WavePartitions
     {
@@ -61,7 +94,8 @@ namespace AudioVisual
         set
         {
             _wavePartitions = value;
-            _processor.BandPassCount = _wavePartitions;
+            if(_visualizer.GetType() == typeof(WaveVisualizer))
+                (_visualizer as WaveVisualizer)?.SetBandPassCount(value);
             RaisePropertyChanged(nameof(WavePartitions));
         }
     }
@@ -70,8 +104,7 @@ namespace AudioVisual
     {
         var audioData = _recorder.GetAudioData();
         var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 12);
-        var summedWavesValues = _processor.GetSubBandFilterBank(frequencySpectrum);
-        Visualization = _visualizer.Draw(summedWavesValues);
+        Visualization = _visualizer.Draw(frequencySpectrum);
     }
 
     public override void Dispose()

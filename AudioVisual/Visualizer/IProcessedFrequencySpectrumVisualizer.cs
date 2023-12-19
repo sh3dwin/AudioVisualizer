@@ -3,7 +3,7 @@ using NAudio.Dsp;
 
 namespace AudioVisual.Visualizer
 {
-    public interface IVisualizer
+    public interface IProcessedFrequencySpectrumVisualizer
     {
         public Canvas Draw(Complex[] frequencySpectrum);
     }

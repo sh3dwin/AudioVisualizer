@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace AudioVisual
+namespace AudioVisual.ViewModel
 {
     public class ViewModelBase : INotifyPropertyChanged, IDisposable
     {

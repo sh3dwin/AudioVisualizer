@@ -1,7 +1,7 @@
 ﻿using System;
 using CSCore.Codecs.MP3;
 
-namespace AudioVisual
+namespace AudioVisual.Audio
 {
     public class SoundSource
     {

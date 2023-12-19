@@ -89,7 +89,7 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\PlaybackViewModel.cs" />
     <Compile Include="PercentageToWidthConverter.cs" />
-    <Compile Include="SongProvider.cs" />
+    <Compile Include="Audio\SongProvider.cs" />
     <Compile Include="Audio\SoundSource.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\LoopbackView.xaml.cs">
@@ -98,11 +98,14 @@
     <Compile Include="View\PlaybackView.xaml.cs">
       <DependentUpon>PlaybackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Visualizer\WaveVisualizer.cs" />
     <Compile Include="Visualizer\FrequencyToColorMapper.cs" />
-    <Compile Include="Visualizer\FreqVisualizerNAudio.cs" />
+    <Compile Include="Visualizer\FrequencySpectrumVisualizer.cs" />
     <Compile Include="Utils\MathUtils.cs" />
     <Compile Include="Utils\SoundWaveUtils.cs" />
+    <Compile Include="Visualizer\FrequencyVisualizer.cs" />
     <Compile Include="Visualizer\IVisualizer.cs" />
+    <Compile Include="Visualizer\IProcessedFrequencySpectrumVisualizer.cs" />
     <Compile Include="Visualizer\RenderSettings.cs" />
     <Compile Include="Visualizer\SubBandFilterBankVisualizer.cs" />
     <Compile Include="Processor\SubBandFilterBank.cs" />
@@ -118,7 +121,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Audio\AudioStreamPlayer.cs">
+    <Compile Include="Audio\AudioFileDataReader.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="View\MainView.xaml.cs">

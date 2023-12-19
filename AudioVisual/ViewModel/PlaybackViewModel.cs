@@ -4,35 +4,52 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using AudioVisual.Visualizer;
 using AudioVisual.Audio;
-using System.Diagnostics;
 using AudioVisual.Processor;
+using AudioVisual.Visualizer;
 
-namespace AudioVisual
+namespace AudioVisual.ViewModel
 {
-    public class PlaybackViewModel : ViewModelBase, IDisposable
+    public class PlaybackViewModel : ViewModelBase
     {
         private readonly ISongProvider _songProvider;
         private SoundSource _selectedSong;
         private readonly AudioStreamPlayer _player;
-        private readonly IAudioProcessor _recorder;
         private readonly DispatcherTimer _timer;
-        private readonly FreqVisualizerNAudio _visualizer;
-        private readonly FrequencySpectrumAggregator _processor;
+        // recorder
+        private readonly IAudioProcessor _recorder;
+        // visualizers
+        private IProcessedFrequencySpectrumVisualizer _visualizer;
+        // analyzer
         private readonly FourierTransformAnalyzer _analyzer;
-        private float _elapsedTime = 0;
+        private float _elapsedTime;
         private bool _isPlaying;
+        private readonly int _segmentCount = 200;
+        private int _wavePartitions = 1;
         private Canvas _canvas;
-        public PlaybackViewModel(ISongProvider songProvider, AudioStreamPlayer player, Canvas canvas)
+        private bool _waveVisualization;
+
+        // The size of the FFT, 2^M
+        private int M = 12;
+        public PlaybackViewModel(Canvas canvas)
         {
-            _player = player;
-            _songProvider = songProvider;
-            this.LoadAsync();
-            //_visualizer = new FreqVisualizerNAudio(canvas);
+            _songProvider = new AudioStreamProvider();
+            _player = new AudioStreamPlayer();
+            _canvas = canvas;
             _recorder = new LoopbackAudioProcessor();
-            _visualizer = new FreqVisualizerNAudio(canvas);
-            _processor = new FrequencySpectrumAggregator(100);
+            WaveVisualization = false;
+            if (_waveVisualization)
+            {
+                _visualizer = new WaveVisualizer(
+                    new SubBandFilterBank(_segmentCount, _wavePartitions),
+                    new SubBandFilterBankVisualizer(_canvas));
+            }
+            else
+            {
+                _visualizer = new FrequencyVisualizer(
+                    new FrequencySpectrumAggregator(_segmentCount),
+                    new FrequencySpectrumVisualizer(canvas));
+            }
             _analyzer = new FourierTransformAnalyzer();
 
             Play = new PlaybackCommand(PlaySong, CanPlay);
@@ -100,6 +117,45 @@ namespace AudioVisual
             }
         }
 
+        public bool WaveVisualization
+        {
+            get => _waveVisualization;
+            set
+            {
+                _waveVisualization = value;
+                FrequencyVisualization = !_waveVisualization;
+
+                if (_waveVisualization)
+                {
+                    _visualizer = new WaveVisualizer(
+                        new SubBandFilterBank(_segmentCount, _wavePartitions),
+                        new SubBandFilterBankVisualizer(_canvas));
+                }
+                else
+                {
+                    _visualizer = new FrequencyVisualizer(
+                        new FrequencySpectrumAggregator(_segmentCount),
+                        new FrequencySpectrumVisualizer(_canvas));
+                }
+                RaisePropertyChanged(nameof(FrequencyVisualization));
+                RaisePropertyChanged(nameof(WaveVisualization));
+            }
+        }
+
+        public bool FrequencyVisualization { get; set; }
+
+        public int WavePartitions
+        {
+            get => _wavePartitions;
+            set
+            {
+                _wavePartitions = value;
+                if (_visualizer.GetType() == typeof(WaveVisualizer))
+                    (_visualizer as WaveVisualizer)?.SetBandPassCount(value);
+                RaisePropertyChanged(nameof(WavePartitions));
+            }
+        }
+
         public async override Task LoadAsync()
         {
             if (Songs.Any())
@@ -144,10 +200,8 @@ namespace AudioVisual
         {
             ElapsedTimePercentage = (float)_player.Position.TotalMilliseconds / (float)_player.Length.TotalMilliseconds;
             var audioData = _recorder.GetAudioData(); 
-            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 12);
-            var summedWavesValues = _processor.GetAggregatedFrequencies(frequencySpectrum);
-            var hues = _processor.GetHues();
-            Visualization = _visualizer.Draw(summedWavesValues, hues);
+            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, M);
+            Visualization = _visualizer.Draw(frequencySpectrum);
         }
 
         public override void Dispose()
