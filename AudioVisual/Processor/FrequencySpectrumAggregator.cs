@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AudioVisual.Utils;
 using NAudio.Dsp;
 
@@ -16,9 +15,6 @@ namespace AudioVisual.Processor
 
         private Complex[] _frequencyValues;
 
-        private double _binSize;
-
-        private double _maxSum = 0;
         public FrequencySpectrumAggregator(int samplesNumber = 200, int sampleRate = 48000)
         {
             _samplesNumber = samplesNumber;
@@ -34,7 +30,6 @@ namespace AudioVisual.Processor
             _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(_samplesNumber, (int)(_frequencyValues.Length * 0.25));
             }
         }
-
         public int SampleRate
         {
             get => _sampleRate;
@@ -82,7 +77,6 @@ namespace AudioVisual.Processor
 
                 summedFrequencies.Add(summedValues);
             }
-            //return NormalizeValues(summedWaves);
             return summedFrequencies;
         }
         private double GetMaxAmplitudeBetweenFrequencies(double lowerFrequencyBoundary, double upperFrequencyBoundary)
@@ -90,25 +84,11 @@ namespace AudioVisual.Processor
             var maxAmplitude = 0.0;
             for (int i = (int)lowerFrequencyBoundary; i < upperFrequencyBoundary && i < _frequencyValues.Length; i++)
             {
-                //Console.WriteLine($"Frequency is {frequency} at bin {i}, min frequency at {minFrequencyBin}, maximum at {maxFrequencyBin}");
                 if (_frequencyValues[i].X > maxAmplitude)
                     maxAmplitude = _frequencyValues[i].X;
             }
 
             return maxAmplitude;
-        }
-
-        private List<List<double>> NormalizeValues(List<List<double>> summedWaves)
-        {
-            var normalizedValues = new List<List<double>>();
-            for (int i = 0; i < summedWaves.Count; i++)
-            {
-                normalizedValues.Add(new List<double>());
-                var scalingFactor = 1 / (_maxSum);
-                normalizedValues[i].AddRange(summedWaves[i].Select(x => x * scalingFactor));
-            }
-
-            return normalizedValues;
         }
     }
 }

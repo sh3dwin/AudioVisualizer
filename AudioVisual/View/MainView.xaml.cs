@@ -18,8 +18,7 @@ namespace AudioVisual.View
             InitializeComponent();
             Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
 
-            _viewModel = new MainViewModel(
-                new PlaybackViewModel(new Canvas()), new LoopbackViewModel(new Canvas()));
+            _viewModel = new MainViewModel(new LoopbackViewModel(new Canvas()));
             DataContext = _viewModel;
             Loaded += MainView_Loaded;
         }

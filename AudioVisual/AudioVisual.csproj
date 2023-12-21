@@ -75,29 +75,20 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Analysis\IAudioAnalyzer.cs" />
-    <Compile Include="Audio\AudioLibrary.cs" />
-    <Compile Include="Audio\AudioLibraryFactory.cs" />
     <Compile Include="Analysis\FourierTransform.cs" />
     <Compile Include="Audio\IAudioProcessor.cs" />
     <Compile Include="Audio\LoopbackAudioProcessor.cs" />
-    <Compile Include="Command\DelegateCommand.cs" />
     <Compile Include="DataStructures\BandPassFilteredWave.cs" />
     <Compile Include="Processor\FrequencySpectrumAggregator.cs" />
     <Compile Include="Processor\IProcessor.cs" />
-    <Compile Include="Utils\ComplexArray.cs" />
     <Compile Include="ViewModel\LoopbackViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\PlaybackViewModel.cs" />
-    <Compile Include="PercentageToWidthConverter.cs" />
-    <Compile Include="Audio\SongProvider.cs" />
-    <Compile Include="Audio\SoundSource.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\LoopbackView.xaml.cs">
       <DependentUpon>LoopbackView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PlaybackView.xaml.cs">
-      <DependentUpon>PlaybackView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Visualizer\CircularWaveVisualizer.cs" />
+    <Compile Include="Visualizer\CircularSubBandFilterBankVisualizer.cs" />
     <Compile Include="Visualizer\WaveVisualizer.cs" />
     <Compile Include="Visualizer\FrequencyToColorMapper.cs" />
     <Compile Include="Visualizer\FrequencySpectrumVisualizer.cs" />
@@ -106,7 +97,6 @@
     <Compile Include="Visualizer\FrequencyVisualizer.cs" />
     <Compile Include="Visualizer\IVisualizer.cs" />
     <Compile Include="Visualizer\IProcessedFrequencySpectrumVisualizer.cs" />
-    <Compile Include="Visualizer\RenderSettings.cs" />
     <Compile Include="Visualizer\SubBandFilterBankVisualizer.cs" />
     <Compile Include="Processor\SubBandFilterBank.cs" />
     <Page Include="View\LoopbackView.xaml">
@@ -121,20 +111,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Audio\AudioFileDataReader.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\PlaybackView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Audio\PlaybackCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -162,25 +144,5 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="Resources\Songs\song - Copy.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Songs\song.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="Resources\Icons\next.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\play.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\previous.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\stop.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

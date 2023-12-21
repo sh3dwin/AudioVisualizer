@@ -37,7 +37,7 @@ namespace AudioVisual.Visualizer
             {
                 var currentBandPassedWave = subBandFilterBank[iBandPass];
                 var bandPassValues = currentBandPassedWave.Values;
-                var hue = currentBandPassedWave.GetAveragedFrequency() * (360.0 / currentBandPassedWave.SampleRate);
+                var hue = currentBandPassedWave.GetAveragedFrequency() * (360.0 / (currentBandPassedWave.SampleRate / 8.0));
                 var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, 1);
                 var brush = new SolidColorBrush(color);
                 var offset = (iBandPass + 1) * yStep;

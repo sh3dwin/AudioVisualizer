@@ -14,11 +14,17 @@ namespace AudioVisual
         public LoopbackView()
         {
             InitializeComponent();
+
             Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
 
             _viewModel = new LoopbackViewModel(new Canvas());
             DataContext = _viewModel;
             Loaded += PlaybackView_Loaded; ;
+
+            Visualizer.Dispatcher.Invoke(() =>
+            {
+
+            });
         }
 
         private async void PlaybackView_Loaded(object sender, System.Windows.RoutedEventArgs e)

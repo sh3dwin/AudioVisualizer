@@ -8,36 +8,11 @@
         mc:Ignorable="d"
         Title="MainView" Height="450" Width="800">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModel:PlaybackViewModel}">
-            <audioVisual:PlaybackView/>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModel:LoopbackViewModel}">
             <audioVisual:LoopbackView/>
         </DataTemplate>
     </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="15*"/>
-        </Grid.RowDefinitions>
-        <Menu Grid.Row="0" Width = "Auto"  FontSize="10" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <MenuItem Header = "_Visualization" >
-                <MenuItem Header="_Frequency"
-                          Command="{Binding SelectVisualizationModeCommand}"
-                          CommandParameter="{Binding FrequencyVisualizationViewModel}"/>
-                <MenuItem Header = "_Wave"
-                          Command="{Binding SelectVisualizationModeCommand}"
-                          CommandParameter="{Binding WaveVisualizationViewModel}"/>
-            </MenuItem>
-            <MenuItem Header = "_Mode" >
-                <MenuItem Header="_Loopback"
-                          Command="{Binding SelectViewModelCommand}"
-                          CommandParameter="{Binding LoopbackViewModel}"/>
-                <MenuItem Header = "_Playback"
-                          Command="{Binding SelectViewModelCommand}"
-                          CommandParameter="{Binding PlaybackViewModel}"/>
-            </MenuItem>
-        </Menu>
-        <ContentControl Grid.Row="1" Content="{Binding SelectedViewModel}"/>
+        <ContentControl Content="{Binding LoopbackViewModel}"/>
     </Grid>
 </Window>

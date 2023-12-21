@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AudioVisual.DataStructures
 {
@@ -22,6 +24,11 @@ namespace AudioVisual.DataStructures
         public double GetAveragedFrequency()
         {
             return (MaxFrequency + MinFrequency) * 0.5;
+        }
+
+        public double SumOfAbsoluteAmplitudes()
+        {
+            return Values.Sum(Math.Abs);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace AudioVisual.Visualizer
             _visualizer = visualizer;
 
         }
+
         public Canvas Draw(Complex[] frequencySpectrum)
         {
             var filterBank = _processor.GetSubBandFilterBank(frequencySpectrum);

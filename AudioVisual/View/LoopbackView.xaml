@@ -10,13 +10,14 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
     <Grid>
-        <ContentControl Content="{Binding Visualization}" Width="Auto" Height="Auto"/>
+        <ContentControl x:Name="Visualizer" Content="{Binding Visualization}" Width="Auto" Height="Auto"/>
         <Slider Width="200" Minimum="1" Maximum="10" 
                 Value="{Binding WavePartitions}"  
-                Visibility="{Binding WaveVisualization, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                Visibility="{Binding WavePartitionsBar, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <StackPanel MinWidth="200" MaxWidth="200" HorizontalAlignment="Left">
             <RadioButton GroupName="visualization" Foreground="AliceBlue"  IsChecked="{Binding FrequencyVisualization}">Frequency Visualization</RadioButton>
             <RadioButton GroupName="visualization" Foreground="AliceBlue" IsChecked="{Binding WaveVisualization}">Wave Visualization</RadioButton>
+            <RadioButton GroupName="visualization" Foreground="AliceBlue" IsChecked="{Binding CircularWaveVisualization}">Circular Harmonics Visualization</RadioButton>
         </StackPanel>
     </Grid>
 </UserControl>

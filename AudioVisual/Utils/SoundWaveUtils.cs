@@ -9,16 +9,52 @@ namespace AudioVisual.Utils
 {
     public static class SoundWaveUtils
     {
-        public static Complex[] CreateAndInitializeComplexArray(WaveBuffer buffer, int M)
+        static float[] ConvertBytesToFloats(byte[] byteArray)
         {
-            int len = (int)Math.Pow(2, M);
-
-            Complex[] values = new Complex[len];
-            //Complex[] values = new Complex[len];
-            for (int i = 0; i < len; i++)
+            // Check if the length of the byte array is a multiple of 4
+            if (byteArray.Length % 4 != 0)
             {
-                values[i].Y = 0;
-                values[i].X = buffer.FloatBuffer[i];
+                throw new ArgumentException("Byte array length must be a multiple of 4.");
+            }
+
+            // Create an array to store the floats
+            float[] floatArray = new float[byteArray.Length / 4];
+
+            // Convert each set of 4 bytes to a float
+            for (int i = 0; i < floatArray.Length; i++)
+            {
+                floatArray[i] = BitConverter.ToSingle(byteArray, i * 4);
+            }
+
+            return floatArray;
+        }
+        public static Complex[] CreateAndInitializeComplexArray(WaveBuffer buffer, int powerOfTwo)
+        {
+            var len = (int)Math.Pow(2, powerOfTwo);
+            var values = new Complex[len];
+
+            var floatBuffer = ConvertBytesToFloats(buffer.ByteBuffer);
+
+            if (len < floatBuffer.Length)
+            {
+                for (var i = 0; i < len; i++)
+                {
+                    values[i].Y = 0;
+                    values[i].X = buffer.FloatBuffer[i];
+                }
+            }
+            else
+            {
+                for (var i = 0; i < floatBuffer.Length; i++)
+                {
+                    values[i].Y = 0;
+                    values[i].X = floatBuffer[i];
+                }
+                for (var i = floatBuffer.Length; i < len; i++)
+                {
+                    values[i].Y = 0;
+                    values[i].X = 0;
+                }
             }
 
             return values;

@@ -26,7 +26,7 @@ namespace AudioVisual.Processor
             _sampleRate = sampleRate;
 
             var maxFrequency = (int)(_sampleRate * 0.5);
-            _bandPassSplits = MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
+            _bandPassSplits = MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency / 4);
 
             _samplingPeriod = 1.0 / _sampleRate;
 
@@ -37,8 +37,9 @@ namespace AudioVisual.Processor
             set
             {
                 _bandPassCount = value;
+                var maxFrequency = (int)(_sampleRate * 0.5);
                 _bandPassSplits =
-                    MathUtils.SplitIntoNGeometricSeries(_bandPassCount, (int)(_sampleRate * 0.5));
+                    MathUtils.SplitIntoNGeometricSeries(_bandPassCount, (maxFrequency / 4));
             }
 
         }
@@ -89,7 +90,7 @@ namespace AudioVisual.Processor
             }
 
             var wholeWave =
-                new BandPassFilteredWave(_wholeWaveAmplitudes, 0, _sampleRate * 0.5, _sampleRate);
+                new BandPassFilteredWave(_wholeWaveAmplitudes, 0, _sampleRate * 0.125, _sampleRate);
             allFrequencyWindows.Add(wholeWave);
 
             return allFrequencyWindows;
@@ -113,11 +114,16 @@ namespace AudioVisual.Processor
             var minFrequencyBin = lowerFrequencyBoundary / _binWidth;
             var maxFrequencyBin = upperFrequencyBoundary / _binWidth;
             var sumOfAmplitudes = 0.0;
-            var constant = 2 * Math.PI * index;
+            var bufferSize = 4756;
+            var stepSize = (Math.PI * 2.0) / _samplesCount;
+            const double epsilon = 1e-3;
             for (var i = (int)minFrequencyBin; i < maxFrequencyBin && i < _samplesCount; i++)
             {
-                var arg = (constant * frequency + MathUtils.Argument(_frequencyValues[i])) * _samplingPeriod;
-                sumOfAmplitudes += _frequencyValues[i].X * Math.Sin(arg);
+                if (_frequencyValues[i].X < epsilon && _frequencyValues[i].X > -epsilon)
+                    continue;
+
+                var arg = (index * frequency) * stepSize; 
+                sumOfAmplitudes += _frequencyValues[i].X * MathUtils.FastSin(arg + MathUtils.HalfPi);
                 frequency += _binWidth;
             }
             if (_wholeWaveAmplitudes.Count > index)
