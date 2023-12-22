@@ -78,16 +78,17 @@
     <Compile Include="Analysis\FourierTransform.cs" />
     <Compile Include="Audio\IAudioProcessor.cs" />
     <Compile Include="Audio\LoopbackAudioProcessor.cs" />
+    <Compile Include="Converters\VisualizationModeConverter.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="DataStructures\FftFrequencyBin.cs" />
     <Compile Include="DataStructures\FrequencyFilter.cs" />
     <Compile Include="Processor\FrequencySpectrumAggregator.cs" />
     <Compile Include="Processor\IProcessor.cs" />
-    <Compile Include="ViewModel\LoopbackViewModel.cs" />
+    <Compile Include="Utils\Enums.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
-    <Compile Include="View\LoopbackView.xaml.cs">
-      <DependentUpon>LoopbackView.xaml</DependentUpon>
+    <Compile Include="View\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Visualizer\CircularWaveVisualizer.cs" />
     <Compile Include="Visualizer\CircularSubBandFilterBankVisualizer.cs" />
@@ -101,20 +102,12 @@
     <Compile Include="Visualizer\IProcessedFrequencySpectrumVisualizer.cs" />
     <Compile Include="Visualizer\SubBandFilterBankVisualizer.cs" />
     <Compile Include="Processor\SubBandFilterBank.cs" />
-    <Page Include="View\LoopbackView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\MainView.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Compile Include="View\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="View\MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

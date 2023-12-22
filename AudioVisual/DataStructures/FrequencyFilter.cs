@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AudioVisual.Utils;
 using NAudio.Dsp;
 
 namespace AudioVisual.DataStructures
@@ -23,9 +24,9 @@ namespace AudioVisual.DataStructures
             SampleRate = sampleRate;
         }
 
-        public FrequencyFilter(IReadOnlyList<FftFrequencyBin> fftValues, double lowerFrequencyBoundary, double upperFrequencyBoundary, int sampleRate)
+        public FrequencyFilter(IReadOnlyList<FftFrequencyBin> fftValues, double lowerFrequencyBoundary, double upperFrequencyBoundary)
         {
-            var maxFrequency = sampleRate * 0.5;
+            var maxFrequency = Constants.SampleRate * 0.5;
             BinWidth = maxFrequency / fftValues.Count;
             var minFrequencyBin = (int)(lowerFrequencyBoundary / BinWidth);
             var maxFrequencyBin = (int)(upperFrequencyBoundary / BinWidth);
@@ -45,7 +46,7 @@ namespace AudioVisual.DataStructures
             Values = filteredFrequencies;
             MinFrequency = Values[0].Frequency;
             MaxFrequency = Values[Values.Count - 1].Frequency;
-            SampleRate = sampleRate;
+            SampleRate = Constants.SampleRate;
         }
 
         public Complex[] ToPaddedComplexArray(int m)

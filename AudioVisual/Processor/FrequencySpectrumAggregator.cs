@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using AudioVisual.DataStructures;
 using AudioVisual.Utils;
-using NAudio.Dsp;
 
 namespace AudioVisual.Processor
 {
@@ -16,7 +15,7 @@ namespace AudioVisual.Processor
 
         private List<FftFrequencyBin> _fftValues;
 
-        public FrequencySpectrumAggregator(int samplesNumber = 200, int sampleRate = 48000)
+        public FrequencySpectrumAggregator(int samplesNumber = Constants.SegmentCount, int sampleRate = Constants.SampleRate)
         {
             _samplesNumber = samplesNumber;
             _sampleRate = sampleRate;
@@ -42,9 +41,8 @@ namespace AudioVisual.Processor
         }
         public List<double> GetHues()
         {
-            var frequencyFraction = 0.25;
-            var frequencyStep = (_maxFrequency * frequencyFraction) / Partitions;
-            var hueStep = 720.0 / (_maxFrequency * frequencyFraction);
+            var frequencyStep = (_maxFrequency) / Partitions;
+            var hueStep = 720.0 / (_maxFrequency);
             var splitLowerBound = 0;
             
             var hues = new List<double>(Partitions);

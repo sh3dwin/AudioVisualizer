@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace AudioVisual
+namespace AudioVisual.View
 {
     /// <summary>
     /// Interaction logic for App.xaml

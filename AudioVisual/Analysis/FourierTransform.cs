@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AudioVisual.Analysis;
 using AudioVisual.DataStructures;
 using AudioVisual.Utils;
 using NAudio.Dsp;
 using NAudio.Wave;
 
-namespace AudioVisual
+namespace AudioVisual.Analysis
 {
     public class FourierTransformAnalyzer : IAudioAnalyzer
     {
@@ -22,17 +21,24 @@ namespace AudioVisual
 
         public static List<FftFrequencyBin> ConvertToFftFrequencyBins(Complex[] fftData)
         {
-            // get only the first 1/4, or the bins containing data of the first 12kHz
             var count = fftData.Length;
 
             var fftFrequencyBins = new List<FftFrequencyBin>(count);
 
-            var maxSignalFrequency = 24000;
+            var maxSignalFrequency = Constants.SampleRate / 2.0;
             var binWidthInFrequency = (float)maxSignalFrequency / count;
 
-            for (var i = 0; i < count; i++)
+            // Add frequencies in ascending order in the first half of the discrete fourier
+            for (var i = 0; i < count / 2; i++)
             {
                 var frequency = binWidthInFrequency * i;
+
+                fftFrequencyBins.Add(new FftFrequencyBin(fftData[i], frequency));
+            }
+            // Add frequencies in descending order in the second half of the discrete fourier
+            for (var i = 0; i < count / 2; i++)
+            {
+                var frequency = binWidthInFrequency * ((int)(count / 2) - i);
 
                 fftFrequencyBins.Add(new FftFrequencyBin(fftData[i], frequency));
             }

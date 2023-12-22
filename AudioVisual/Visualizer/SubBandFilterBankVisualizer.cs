@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using AudioVisual.Analysis;
 using AudioVisual.DataStructures;
 using AudioVisual.Utils;
 
