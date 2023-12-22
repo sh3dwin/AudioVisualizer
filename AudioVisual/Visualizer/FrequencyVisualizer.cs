@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Windows.Controls;
+using AudioVisual.DataStructures;
 using AudioVisual.Processor;
 using NAudio.Dsp;
 
@@ -14,11 +16,16 @@ namespace AudioVisual.Visualizer
             _processor = processor;
             _visualizer = visualizer;
         }
-        public Canvas Draw(Complex[] frequencySpectrum)
+        public Canvas Draw(List<FftFrequencyBin> frequencySpectrum)
         {
             var aggregatedFrequencies = _processor.GetAggregatedFrequencies(frequencySpectrum);
             var hues = _processor.GetHues();
             return _visualizer.Draw(aggregatedFrequencies, hues);
+        }
+
+        public void Dispose()
+        {
+            _visualizer?.Dispose();
         }
     }
 }

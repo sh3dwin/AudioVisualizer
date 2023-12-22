@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using NAudio.Dsp;
 
 namespace AudioVisual.Utils
 {
@@ -26,6 +27,15 @@ namespace AudioVisual.Utils
                 step++;
             }
             return splits;
+        }
+
+        public static double NormalizeBetweenZeroToPiHalf(double value)
+        {
+            var arg = value + 2 * Math.PI;
+            var div = Math.Floor(arg / HalfPi);
+            arg -= div * HalfPi;
+
+            return arg;
         }
 
         public static double GetGeometricSeriesCoefficient(int n, int size)
@@ -96,7 +106,7 @@ namespace AudioVisual.Utils
             return result;
         }
 
-        public static List<double> NormalizeValues(IReadOnlyList<double> values)
+        public static List<double> NormalizeValues(IReadOnlyList<float> values)
         {
             var maxAmplitude = values.Max(Math.Abs);
             const double epsilon = 1e-3;

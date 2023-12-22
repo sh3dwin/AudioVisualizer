@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AudioVisual.DataStructures;
 using AudioVisual.Utils;
 using NAudio.Dsp;
 
@@ -13,7 +14,7 @@ namespace AudioVisual.Processor
         private int _sampleRate;
         private int _maxFrequency;
 
-        private Complex[] _frequencyValues;
+        private List<FftFrequencyBin> _fftValues;
 
         public FrequencySpectrumAggregator(int samplesNumber = 200, int sampleRate = 48000)
         {
@@ -27,7 +28,7 @@ namespace AudioVisual.Processor
             get => _samplesNumber;
             set {
             _samplesNumber = value;
-            _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(_samplesNumber, (int)(_frequencyValues.Length * 0.25));
+            _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(_samplesNumber, (int)(_fftValues.Count));
             }
         }
         public int SampleRate
@@ -60,11 +61,11 @@ namespace AudioVisual.Processor
 
             return hues;
         }
-        public List<double> GetAggregatedFrequencies(Complex[] frequencySpectrum)
+        public List<double> GetAggregatedFrequencies(List<FftFrequencyBin> fftResult)
         {
-            _frequencyValues = frequencySpectrum;
+            _fftValues = fftResult;
 
-            _frequencyPartitionsSplits ??= MathUtils.SplitIntoNGeometricSeries(Partitions, (int)(frequencySpectrum.Length * 0.25));
+            _frequencyPartitionsSplits ??= MathUtils.SplitIntoNGeometricSeries(Partitions, (int)(fftResult.Count));
 
             var splitLowerBound = 0;
             var summedFrequencies = new List<double>(Partitions);
@@ -82,10 +83,10 @@ namespace AudioVisual.Processor
         private double GetMaxAmplitudeBetweenFrequencies(double lowerFrequencyBoundary, double upperFrequencyBoundary)
         {
             var maxAmplitude = 0.0;
-            for (int i = (int)lowerFrequencyBoundary; i < upperFrequencyBoundary && i < _frequencyValues.Length; i++)
+            for (int i = (int)lowerFrequencyBoundary; i < upperFrequencyBoundary && i < _fftValues.Count; i++)
             {
-                if (_frequencyValues[i].X > maxAmplitude)
-                    maxAmplitude = _frequencyValues[i].X;
+                if (_fftValues[i].Amplitude > maxAmplitude)
+                    maxAmplitude = _fftValues[i].Amplitude;
             }
 
             return maxAmplitude;

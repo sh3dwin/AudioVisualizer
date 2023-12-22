@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Windows.Controls;
+using AudioVisual.DataStructures;
 using AudioVisual.Processor;
 using NAudio.Dsp;
 
@@ -16,7 +18,7 @@ namespace AudioVisual.Visualizer
 
         }
 
-        public Canvas Draw(Complex[] frequencySpectrum)
+        public Canvas Draw(List<FftFrequencyBin> frequencySpectrum)
         {
             var filterBank = _processor.GetSubBandFilterBank(frequencySpectrum);
             return _visualizer.Draw(filterBank);
@@ -25,6 +27,11 @@ namespace AudioVisual.Visualizer
         public void SetBandPassCount(int bandPassCount)
         {
             _processor.BandPassCount = bandPassCount;
+        }
+
+        public void Dispose()
+        {
+            _visualizer?.Dispose();
         }
     }
 }

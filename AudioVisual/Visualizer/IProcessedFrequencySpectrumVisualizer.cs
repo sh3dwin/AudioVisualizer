@@ -1,10 +1,12 @@
-﻿using System.Windows.Controls;
-using NAudio.Dsp;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Controls;
+using AudioVisual.DataStructures;
 
 namespace AudioVisual.Visualizer
 {
-    public interface IProcessedFrequencySpectrumVisualizer
+    public interface IProcessedFrequencySpectrumVisualizer : IDisposable
     {
-        public Canvas Draw(Complex[] frequencySpectrum);
+        public Canvas Draw(List<FftFrequencyBin> frequencySpectrum);
     }
 }

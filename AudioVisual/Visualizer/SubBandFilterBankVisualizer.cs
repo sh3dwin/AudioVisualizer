@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using AudioVisual.DataStructures;
+using AudioVisual.Utils;
 
 namespace AudioVisual.Visualizer
 {
@@ -18,7 +20,7 @@ namespace AudioVisual.Visualizer
             _canvas = canvas;
         }
 
-        public Canvas Draw(List<BandPassFilteredWave> subBandFilterBank)
+        public Canvas Draw(List<FrequencyFilter> subBandFilterBank)
         {
             ClearCanvas();
 
@@ -35,14 +37,14 @@ namespace AudioVisual.Visualizer
 
             for (int iBandPass = 0; iBandPass < bandPassCount; iBandPass++)
             {
-                var currentBandPassedWave = subBandFilterBank[iBandPass];
-                var bandPassValues = currentBandPassedWave.Values;
-                var hue = currentBandPassedWave.GetAveragedFrequency() * (360.0 / (currentBandPassedWave.SampleRate / 8.0));
+                var filter = subBandFilterBank[iBandPass];
+                var wave = FourierTransformAnalyzer.ToWave(filter, Constants.PowerOfTwo);
+                var hue = filter.GetAveragedFrequency() * (360.0 / (filter.SampleRate / 2.0));
                 var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, 1);
                 var brush = new SolidColorBrush(color);
                 var offset = (iBandPass + 1) * yStep;
-                var wave = DrawBandPassWave(bandPassValues, brush, offset);
-                canvasLines.AddRange(wave);
+                var visualizedWave = DrawBandPassWave(wave, brush, offset);
+                canvasLines.AddRange(visualizedWave);
             }
 
             foreach (var line in canvasLines)
@@ -53,20 +55,21 @@ namespace AudioVisual.Visualizer
             return _canvas;
         }
 
-        private List<Line> DrawBandPassWave(IReadOnlyList<double> bandPassValues, SolidColorBrush color, double offset)
+        private List<Line> DrawBandPassWave(IReadOnlyList<float> bandPassValues, SolidColorBrush color, double offset)
         {
-            var intervalLength = _canvas.ActualWidth / bandPassValues.Count;
+            var intervalLength = _canvas.ActualWidth / Constants.SegmentCount;
+            var step = bandPassValues.Count / Constants.SegmentCount; 
 
             var y1 = offset;
 
-            var lines = new List<Line>(bandPassValues.Count);
-            for (var i = 0; i < bandPassValues.Count; i++)
+            var lines = new List<Line>(Constants.SegmentCount);
+            for (var i = 0; i < Constants.SegmentCount; i++)
             {
                 var line = new Line();
                 line.X1 = i * intervalLength;
                 line.Y1 = y1;
                 line.X2 = (i + 1) * intervalLength;
-                line.Y2 = bandPassValues[i] * AmplitudeScalingFactor + offset;
+                line.Y2 = bandPassValues[i * step] * AmplitudeScalingFactor + offset;
                 line.StrokeThickness = 3;
                 y1 = line.Y2;
                 line.Stroke = color;

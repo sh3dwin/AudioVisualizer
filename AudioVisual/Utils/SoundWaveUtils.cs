@@ -40,7 +40,7 @@ namespace AudioVisual.Utils
                 for (var i = 0; i < len; i++)
                 {
                     values[i].Y = 0;
-                    values[i].X = buffer.FloatBuffer[i];
+                    values[i].X = floatBuffer[i];
                 }
             }
             else

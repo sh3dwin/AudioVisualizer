@@ -11,8 +11,6 @@ namespace AudioVisual.ViewModel
 {
     public class LoopbackViewModel : ViewModelBase
     {
-        private CircleVisualizer temp;
-
         // recorder
         private readonly IAudioProcessor _recorder;
         // visualizers
@@ -30,8 +28,6 @@ namespace AudioVisual.ViewModel
         {
             MathUtils.InitializeSinValuesBetween0AndPi();
             _canvas = canvas;
-
-            temp = new CircleVisualizer(canvas);
 
             _recorder = new LoopbackAudioProcessor();
             WaveVisualization = false;
@@ -140,10 +136,11 @@ namespace AudioVisual.ViewModel
         private void DrawBuffer(object sender, EventArgs e)
         {
             var audioData = _recorder.GetAudioData();
-            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 12);
+            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 15);
 
+            var audioBuffer = SoundWaveUtils.CreateAndInitializeComplexArray(audioData, 15);
             Visualization.Dispatcher.Invoke(() => 
-                { Visualization = temp.Draw(frequencySpectrum); });
+                { Visualization = _visualizer.Draw(frequencySpectrum); });
         }
 
         public override void Dispose()

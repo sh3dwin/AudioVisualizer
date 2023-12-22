@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AudioVisual.DataStructures;
 using AudioVisual.Utils;
 using NAudio.Dsp;
@@ -14,7 +15,7 @@ namespace AudioVisual.Processor
         private int _samplesCount;
         private int _sampleRate;
 
-        private Complex[] _frequencyValues;
+        private List<FftFrequencyBin> _fftValues;
         private List<double> _wholeWaveAmplitudes;
 
         private double _samplingPeriod;
@@ -26,7 +27,7 @@ namespace AudioVisual.Processor
             _sampleRate = sampleRate;
 
             var maxFrequency = (int)(_sampleRate * 0.5);
-            _bandPassSplits = MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency / 4);
+            _bandPassSplits = MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
 
             _samplingPeriod = 1.0 / _sampleRate;
 
@@ -39,7 +40,7 @@ namespace AudioVisual.Processor
                 _bandPassCount = value;
                 var maxFrequency = (int)(_sampleRate * 0.5);
                 _bandPassSplits =
-                    MathUtils.SplitIntoNGeometricSeries(_bandPassCount, (maxFrequency / 4));
+                    MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
             }
 
         }
@@ -60,78 +61,66 @@ namespace AudioVisual.Processor
             }
         }
 
-        public List<BandPassFilteredWave> GetSubBandFilterBank(Complex[] frequencySpectrum)
+        public List<FrequencyFilter> GetSubBandFilterBank(List<FftFrequencyBin> fftResult)
         {
-            _frequencyValues = frequencySpectrum;
+            _fftValues = fftResult;
 
-            var binCount = _frequencyValues.Length;
+            var binCount = _fftValues.Count;
             // frequency change between bins
             _binWidth = (double)_sampleRate / (binCount * 2);
 
             _wholeWaveAmplitudes = new List<double>();
 
             var splitLowerBound = 0;
-            var allFrequencyWindows = new List<BandPassFilteredWave>(_bandPassCount + 1);
+            var allFrequencyWindows = new List<FrequencyFilter>(_bandPassCount + 1);
 
             // If the number of partitions is only one, return only the whole wave
             if (BandPassCount == 1)
             {
-                return new List<BandPassFilteredWave> { GetBandPassedWave(0, _bandPassSplits[0]) };
+                return new List<FrequencyFilter>
+                {
+                    new(_fftValues, 0, (_sampleRate * 0.5), _sampleRate)
+                };
             }
 
             for (var iSplit = 0; iSplit < _bandPassCount; iSplit++)
             {
-
-                var bandPassFilteredWave = GetBandPassedWave(splitLowerBound, splitLowerBound + _bandPassSplits[iSplit]);
+                var lowerFrequencyBoundary = splitLowerBound;
+                var upperFrequencyBoundary = splitLowerBound + _bandPassSplits[iSplit];
+                var frequencyFilter = new FrequencyFilter(_fftValues, lowerFrequencyBoundary, upperFrequencyBoundary, _sampleRate);
 
                 splitLowerBound += _bandPassSplits[iSplit];
 
-                allFrequencyWindows.Add(bandPassFilteredWave);
+                allFrequencyWindows.Add(frequencyFilter);
             }
 
-            var wholeWave =
-                new BandPassFilteredWave(_wholeWaveAmplitudes, 0, _sampleRate * 0.125, _sampleRate);
+            var wholeWave = new FrequencyFilter(_fftValues, 0, (_sampleRate * 0.5), _sampleRate);
             allFrequencyWindows.Add(wholeWave);
 
             return allFrequencyWindows;
         }
 
-        private BandPassFilteredWave GetBandPassedWave(double lowerFrequencyBoundary, double upperFrequencyBoundary)
-        {
-            var values = new List<double>(_samplesCount);
-            for (var i = 0; i < _samplesCount; ++i)
-            {
-                var value = GetAmplitude(lowerFrequencyBoundary, upperFrequencyBoundary, i);
-                values.Add(value);
-            }
+        //private double GetAmplitude(double lowerFrequencyBoundary, double upperFrequencyBoundary, int t)
+        //{
+        //    var minFrequencyBin = lowerFrequencyBoundary / _binWidth;
+        //    var maxFrequencyBin = upperFrequencyBoundary / _binWidth;
+        //    var sumOfAmplitudes = 0.0;
+        //    var bufferSize = 4756;
+        //    const double epsilon = 1e-3;
+        //    for (var i = (int)minFrequencyBin; i < (int)maxFrequencyBin; i++)
+        //    {
+        //        if (_fftValues[i].Amplitude < epsilon && _fftValues[i].Amplitude > -epsilon)
+        //            continue;
 
-            return new BandPassFilteredWave(values, lowerFrequencyBoundary, upperFrequencyBoundary, _sampleRate);
-        }
+        //        var arg = Math.PI * 2.0 * _fftValues[i].Frequency * t; 
+        //        sumOfAmplitudes += _fftValues[i].Amplitude * MathUtils.FastSin(arg + (_fftValues[i].PhaseShift + Math.PI * 2));
+        //    }
+        //    if (_wholeWaveAmplitudes.Count > t)
+        //        _wholeWaveAmplitudes[t] += sumOfAmplitudes;
+        //    else
+        //        _wholeWaveAmplitudes.Add(sumOfAmplitudes);
 
-        private double GetAmplitude(double lowerFrequencyBoundary, double upperFrequencyBoundary, int index)
-        {
-            var frequency = lowerFrequencyBoundary;
-            var minFrequencyBin = lowerFrequencyBoundary / _binWidth;
-            var maxFrequencyBin = upperFrequencyBoundary / _binWidth;
-            var sumOfAmplitudes = 0.0;
-            var bufferSize = 4756;
-            var stepSize = (Math.PI * 2.0) / _samplesCount;
-            const double epsilon = 1e-3;
-            for (var i = (int)minFrequencyBin; i < maxFrequencyBin && i < _samplesCount; i++)
-            {
-                if (_frequencyValues[i].X < epsilon && _frequencyValues[i].X > -epsilon)
-                    continue;
-
-                var arg = (index * frequency) * stepSize; 
-                sumOfAmplitudes += _frequencyValues[i].X * MathUtils.FastSin(arg + MathUtils.HalfPi);
-                frequency += _binWidth;
-            }
-            if (_wholeWaveAmplitudes.Count > index)
-                _wholeWaveAmplitudes[index] += sumOfAmplitudes;
-            else
-                _wholeWaveAmplitudes.Add(sumOfAmplitudes);
-
-            return sumOfAmplitudes;
-        }
+        //    return sumOfAmplitudes;
+        //}
     }
 }

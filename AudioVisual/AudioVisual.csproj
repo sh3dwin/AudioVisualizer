@@ -78,7 +78,9 @@
     <Compile Include="Analysis\FourierTransform.cs" />
     <Compile Include="Audio\IAudioProcessor.cs" />
     <Compile Include="Audio\LoopbackAudioProcessor.cs" />
-    <Compile Include="DataStructures\BandPassFilteredWave.cs" />
+    <Compile Include="Utils\Constants.cs" />
+    <Compile Include="DataStructures\FftFrequencyBin.cs" />
+    <Compile Include="DataStructures\FrequencyFilter.cs" />
     <Compile Include="Processor\FrequencySpectrumAggregator.cs" />
     <Compile Include="Processor\IProcessor.cs" />
     <Compile Include="ViewModel\LoopbackViewModel.cs" />

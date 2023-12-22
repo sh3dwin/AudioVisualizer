@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using AudioVisual.Utils;
-using NAudio.Dsp;
 
 namespace AudioVisual.Visualizer
 {
@@ -23,7 +22,7 @@ namespace AudioVisual.Visualizer
             _canvas = canvas;
         }
 
-        public Canvas Draw(List<BandPassFilteredWave> subBandFilterBank)
+        public Canvas Draw(List<FrequencyFilter> subBandFilterBank)
         {
             ClearCanvas();
 
@@ -42,7 +41,7 @@ namespace AudioVisual.Visualizer
 
             var iBandPass = 0;
 
-            var colorValues = GetWaveColorSignificance(subBandFilterBank);
+            // var colorValues = GetWaveColorSignificance(subBandFilterBank);
 
             for (var row = 0; row < gridCount && iBandPass < bandPassCount; row++)
             {
@@ -50,16 +49,19 @@ namespace AudioVisual.Visualizer
 
                 for (var column = 0; column < gridCount && iBandPass < bandPassCount; column++)
                 {
-                    var currentBandPassedWave = subBandFilterBank[iBandPass];
-                    var bandPassValues = currentBandPassedWave.Values;
-                    var hue = currentBandPassedWave.GetAveragedFrequency() * (360.0 / (currentBandPassedWave.SampleRate / 8.0));
-                    var saturation = colorValues[iBandPass];
-                    var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, Math.Max(saturation, 0.3));
+                    var filter = subBandFilterBank[iBandPass];
+                    var wave = FourierTransformAnalyzer.ToWave(filter, Constants.PowerOfTwo);
+                    var hue = filter.GetAveragedFrequency() * (360.0 / (filter.SampleRate / 2.0));
+                    var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, 1);
                     var brush = new SolidColorBrush(color);
+                    // var saturation = colorValues[iBandPass];
+                    var saturation = 1;
                     var offsetX = columnDistanceBetweenCircles * (column + 1);
                     var radius = Math.Min(rowDistanceBetweenCircles, columnDistanceBetweenCircles) * RadiusScalingFactor;
-                    var wave = DrawCircularBandPassedWave(bandPassValues, brush, offsetX, offsetY, radius);
-                    canvasLines.AddRange(wave);
+                    var visualizedWave = DrawCircularWave(wave, brush, offsetX, offsetY, radius);
+                    canvasLines.AddRange(visualizedWave);
+
+
 
                     iBandPass++;
                 }
@@ -73,12 +75,14 @@ namespace AudioVisual.Visualizer
             return _canvas;
         }
 
-        private List<Line> DrawCircularBandPassedWave(IReadOnlyList<double> bandPassValues, SolidColorBrush color, double offsetX, double offsetY, double radius)
+        private List<Line> DrawCircularWave(IReadOnlyList<float> wave, SolidColorBrush color, double offsetX, double offsetY, double radius)
         {
-            var normalizedValues = MathUtils.NormalizeValues(bandPassValues);
+            var normalizedValues = MathUtils.NormalizeValues(wave);
             var first = normalizedValues[0];
             var last = normalizedValues[normalizedValues.Count - 1];
             normalizedValues.AddRange(Interpolate(last, first, InterpolationCount));
+
+            var step = wave.Count / Constants.SegmentCount;
 
             var circleCenter = new Point(offsetX, offsetY);
 
@@ -88,30 +92,21 @@ namespace AudioVisual.Visualizer
             var y1 = circleCenter.Y + MathUtils.PolarToCartesianCoordinate(0.0, radius + maxFluctuation * normalizedValues[0]).Y;
 
             var lines = new List<Line>(normalizedValues.Count);
-            
-            var angleStep = (Math.PI * 2) / (normalizedValues.Count - 1);
-            var angleOffset = 0.0;
 
-            //for (var iAmplitudeValue = 0; iAmplitudeValue <= Math.Min(normalizedValues.Count, 100); iAmplitudeValue++)
-            //{
-            //    var theta = angleStep * iAmplitudeValue;
+            var angleStep = (Math.PI * 2) / Constants.SegmentCount;
 
-            //    var X = MathUtils.PolarToCartesianCoordinate(theta, radius + maxFluctuation * normalizedValues[iAmplitudeValue]).X
-
-            //}
-
-            for (var iAmplitudeValue = 1; iAmplitudeValue <= normalizedValues.Count; iAmplitudeValue++)
+            for (var iSegment = 1; iSegment <= Constants.SegmentCount; iSegment++)
             {
-                var theta = angleStep * iAmplitudeValue;
+                var theta = angleStep * iSegment;
 
-                if (iAmplitudeValue != normalizedValues.Count)
+                if (iSegment != normalizedValues.Count)
                 {
                     var line = new Line
                     {
                         X1 = x1,
                         Y1 = y1,
-                        X2 = circleCenter.X + MathUtils.PolarToCartesianCoordinate(theta, radius + maxFluctuation * normalizedValues[iAmplitudeValue]).X,
-                        Y2 = circleCenter.Y + MathUtils.PolarToCartesianCoordinate(theta, radius + maxFluctuation * normalizedValues[iAmplitudeValue]).Y,
+                        X2 = circleCenter.X + MathUtils.PolarToCartesianCoordinate(theta, radius + maxFluctuation * normalizedValues[iSegment * step]).X,
+                        Y2 = circleCenter.Y + MathUtils.PolarToCartesianCoordinate(theta, radius + maxFluctuation * normalizedValues[iSegment * step]).Y,
                         StrokeThickness = 3,
                         Stroke = color
                     };
@@ -143,9 +138,9 @@ namespace AudioVisual.Visualizer
             return lines;
         }
 
-        private List<double> GetWaveColorSignificance(List<BandPassFilteredWave> subBandFilterBank)
+        private List<double> GetWaveColorSignificance(IReadOnlyList<FrequencyFilter> subBandFilterBank)
         {
-            var listOfSummedAmplitudes = new List<double>(subBandFilterBank.Count);
+            var listOfSummedAmplitudes = new List<float>(subBandFilterBank.Count);
             foreach (var wave in subBandFilterBank)
             {
                 listOfSummedAmplitudes.Add(wave.SumOfAbsoluteAmplitudes());
@@ -171,64 +166,6 @@ namespace AudioVisual.Visualizer
             }
 
             return result;
-        }
-        public void Dispose()
-        {
-        }
-    }
-
-    public class CircleVisualizer : IDisposable
-    {
-        private readonly Canvas _canvas;
-
-        private const double RadiusScalingFactor = 0.3;
-
-        public int InterpolationCount = 5;
-
-        public CircleVisualizer(Canvas canvas)
-        {
-            _canvas = canvas;
-        }
-
-        public Canvas Draw(Complex[] fftResult)
-        {
-            ClearCanvas();
-
-            var centerX = _canvas.ActualWidth / 2;
-            var centerY = _canvas.ActualHeight / 2;
-
-            var center = new Point(centerX, centerY);
-
-            var lines = new List<Line>(360);
-
-
-            for (var i = 0; i < 360; i++)
-            {
-                var line = new Line
-                {
-                    X1 = centerX,
-                    Y1 = centerY,
-                    X2 = fftResult[i].X * 10000 + centerX,
-                    Y2 = fftResult[i].Y * 10000 + centerY,
-                    StrokeThickness = 3,
-                    Stroke = new SolidColorBrush(Color.FromRgb(255, 10, 10))
-                };
-
-                lines.Add(line);
-            }
-
-            foreach (var line in lines)
-            {
-                _canvas.Children.Add(line);
-            }
-
-            return _canvas;
-        }
-
-        private void ClearCanvas()
-        {
-            _canvas.Background = new SolidColorBrush(Color.FromRgb(10, 10, 10));
-            _canvas.Children.Clear();
         }
         public void Dispose()
         {
