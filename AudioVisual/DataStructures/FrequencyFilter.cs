@@ -8,8 +8,6 @@ namespace AudioVisual.DataStructures
 {
     public class FrequencyFilter
     {
-        public int SampleRate;
-
         public double MinFrequency;
         public double MaxFrequency;
 
@@ -17,11 +15,9 @@ namespace AudioVisual.DataStructures
 
         public List<FftFrequencyBin> Values;
 
-        public FrequencyFilter(List<FftFrequencyBin> values, int sampleRate)
+        public FrequencyFilter(List<FftFrequencyBin> values)
         {
-
             Values = values;
-            SampleRate = sampleRate;
         }
 
         public FrequencyFilter(IReadOnlyList<FftFrequencyBin> fftValues, double lowerFrequencyBoundary, double upperFrequencyBoundary)
@@ -46,7 +42,6 @@ namespace AudioVisual.DataStructures
             Values = filteredFrequencies;
             MinFrequency = Values[0].Frequency;
             MaxFrequency = Values[Values.Count - 1].Frequency;
-            SampleRate = Constants.SampleRate;
         }
 
         public Complex[] ToPaddedComplexArray(int m)

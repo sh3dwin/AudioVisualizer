@@ -23,6 +23,10 @@ namespace AudioVisual.Visualizer
             _canvas = canvas;
         }
 
+        public void Dispose()
+        {
+        }
+
         public Canvas Draw(List<FrequencyFilter> subBandFilterBank)
         {
             ClearCanvas();
@@ -33,7 +37,7 @@ namespace AudioVisual.Visualizer
             }
 
             var bandPassCount = subBandFilterBank.Count;
-            var canvasLines = new List<Line>(subBandFilterBank[0].Values.Count * (bandPassCount) * 2);
+            var canvasLines = new List<Line>((Constants.SegmentCount + InterpolationCount) * bandPassCount);
 
             // Position of circle centers
             var gridCount = Math.Ceiling(Math.Sqrt(subBandFilterBank.Count));
@@ -42,7 +46,7 @@ namespace AudioVisual.Visualizer
 
             var iBandPass = 0;
 
-            // var colorValues = GetWaveColorSignificance(subBandFilterBank);
+            var colorValues = GetWaveColorSignificance(subBandFilterBank);
 
             for (var row = 0; row < gridCount && iBandPass < bandPassCount; row++)
             {
@@ -50,19 +54,22 @@ namespace AudioVisual.Visualizer
 
                 for (var column = 0; column < gridCount && iBandPass < bandPassCount; column++)
                 {
+                    // Wave information
                     var filter = subBandFilterBank[iBandPass];
                     var wave = FourierTransformAnalyzer.ToWave(filter, Constants.PowerOfTwo);
-                    var hue = filter.GetAveragedFrequency() * (360.0 / (filter.SampleRate / 2.0));
-                    var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, 1);
+
+                    // Color information
+                    var colorValue = Math.Max(colorValues[iBandPass], 0.3);
+                    var hue = filter.GetAveragedFrequency() * (360.0 / (Constants.SampleRate / 2.0));
+                    var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, colorValue);
                     var brush = new SolidColorBrush(color);
-                    // var saturation = colorValues[iBandPass];
-                    var saturation = 1;
+
+                    // Geometry information
                     var offsetX = columnDistanceBetweenCircles * (column + 1);
                     var radius = Math.Min(rowDistanceBetweenCircles, columnDistanceBetweenCircles) * RadiusScalingFactor;
+
                     var visualizedWave = DrawCircularWave(wave, brush, offsetX, offsetY, radius);
                     canvasLines.AddRange(visualizedWave);
-
-
 
                     iBandPass++;
                 }
@@ -83,31 +90,33 @@ namespace AudioVisual.Visualizer
             var last = normalizedValues[normalizedValues.Count - 1];
             normalizedValues.AddRange(Interpolate(last, first, InterpolationCount));
 
-            var step = wave.Count / Constants.SegmentCount;
-
-            var circleCenter = new Point(offsetX, offsetY);
+            var lines = new List<Line>((Constants.SegmentCount + InterpolationCount));
 
             var maxFluctuation = RadiusScalingFactor * radius;
 
-            var x1 = circleCenter.X + MathUtils.PolarToCartesianCoordinate(0.0, radius + maxFluctuation * normalizedValues[0]).X;
-            var y1 = circleCenter.Y + MathUtils.PolarToCartesianCoordinate(0.0, radius + maxFluctuation * normalizedValues[0]).Y;
+            var circleCenter = new Point(offsetX, offsetY);
 
-            var lines = new List<Line>(normalizedValues.Count);
+            var x1 =
+                circleCenter.X + MathUtils.PolarToCartesianCoordinate(0.0, radius + maxFluctuation * normalizedValues[0]).X;
+            var y1 =
+                circleCenter.Y + MathUtils.PolarToCartesianCoordinate(0.0, radius + maxFluctuation * normalizedValues[0]).Y;
 
-            var angleStep = (Math.PI * 2) / Constants.SegmentCount;
+            var step = wave.Count / (Constants.SegmentCount + InterpolationCount);
+            var angleStep = (Math.PI * 2) / (Constants.SegmentCount + InterpolationCount);
 
-            for (var iSegment = 1; iSegment <= Constants.SegmentCount; iSegment++)
+            for (var iSegment = 1; iSegment <= (Constants.SegmentCount + InterpolationCount); iSegment++)
             {
                 var theta = angleStep * iSegment;
 
-                if (iSegment != normalizedValues.Count)
+                if (iSegment != (Constants.SegmentCount + InterpolationCount))
                 {
+                    var fluctuation = maxFluctuation * normalizedValues[iSegment * step];
                     var line = new Line
                     {
                         X1 = x1,
                         Y1 = y1,
-                        X2 = circleCenter.X + MathUtils.PolarToCartesianCoordinate(theta, radius + maxFluctuation * normalizedValues[iSegment * step]).X,
-                        Y2 = circleCenter.Y + MathUtils.PolarToCartesianCoordinate(theta, radius + maxFluctuation * normalizedValues[iSegment * step]).Y,
+                        X2 = circleCenter.X + MathUtils.PolarToCartesianCoordinate(theta, radius + fluctuation).X,
+                        Y2 = circleCenter.Y + MathUtils.PolarToCartesianCoordinate(theta, radius + fluctuation).Y,
                         StrokeThickness = 3,
                         Stroke = color
                     };
@@ -132,10 +141,7 @@ namespace AudioVisual.Visualizer
                     lines.Add(line);
                     break;
                 }
-
-                
             }
-
             return lines;
         }
 
@@ -167,9 +173,6 @@ namespace AudioVisual.Visualizer
             }
 
             return result;
-        }
-        public void Dispose()
-        {
         }
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using AudioVisual.DataStructures;
 using AudioVisual.Utils;
-using NAudio.Dsp;
 
 namespace AudioVisual.Processor
 {
@@ -31,7 +28,6 @@ namespace AudioVisual.Processor
                 _bandPassSplits =
                     MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
             }
-
         }
 
         public List<FrequencyFilter> GetSubBandFilterBank(List<FftFrequencyBin> fftResult)

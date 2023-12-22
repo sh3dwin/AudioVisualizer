@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -38,13 +37,19 @@ namespace AudioVisual.Visualizer
 
             for (int iBandPass = 0; iBandPass < bandPassCount; iBandPass++)
             {
+                // Wave information
                 var filter = subBandFilterBank[iBandPass];
                 var wave = FourierTransformAnalyzer.ToWave(filter, Constants.PowerOfTwo);
-                var hue = filter.GetAveragedFrequency() * (360.0 / (filter.SampleRate / 2.0));
+
+                // Color information
+                var hue = filter.GetAveragedFrequency() * (360.0 / (Constants.SampleRate / 2.0));
                 var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, 1);
                 var brush = new SolidColorBrush(color);
+
+                // Position
                 var offset = (iBandPass + 1) * yStep;
-                var visualizedWave = DrawBandPassWave(wave, brush, offset);
+
+                var visualizedWave = DrawWave(wave, brush, offset);
                 canvasLines.AddRange(visualizedWave);
             }
 
@@ -56,26 +61,29 @@ namespace AudioVisual.Visualizer
             return _canvas;
         }
 
-        private List<Line> DrawBandPassWave(IReadOnlyList<float> bandPassValues, SolidColorBrush color, double offset)
+        private List<Line> DrawWave(IReadOnlyList<float> wave, SolidColorBrush color, double offset)
         {
             var intervalLength = _canvas.ActualWidth / Constants.SegmentCount;
-            var step = bandPassValues.Count / Constants.SegmentCount; 
+            var step = wave.Count / Constants.SegmentCount; 
 
             var y1 = offset;
 
             var lines = new List<Line>(Constants.SegmentCount);
-            for (var i = 0; i < Constants.SegmentCount; i++)
-            {
-                var line = new Line();
-                line.X1 = i * intervalLength;
-                line.Y1 = y1;
-                line.X2 = (i + 1) * intervalLength;
-                line.Y2 = bandPassValues[i * step] * AmplitudeScalingFactor + offset;
-                line.StrokeThickness = 3;
-                y1 = line.Y2;
-                line.Stroke = color;
 
+            for (var iSegment = 0; iSegment < Constants.SegmentCount; iSegment++)
+            {
+                var line = new Line
+                {
+                    X1 = iSegment * intervalLength,
+                    Y1 = y1,
+                    X2 = (iSegment + 1) * intervalLength,
+                    Y2 = wave[iSegment * step] * AmplitudeScalingFactor + offset,
+                    Stroke = color,
+                    StrokeThickness = 3
+                };
                 lines.Add(line);
+
+                y1 = line.Y2;
             }
 
             return lines;
