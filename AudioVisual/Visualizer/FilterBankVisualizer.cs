@@ -9,13 +9,13 @@ using AudioVisual.Utils;
 
 namespace AudioVisual.Visualizer
 {
-    public class SubBandFilterBankVisualizer : IDisposable
+    public class FilterBankVisualizer : IDisposable
     {
         private readonly Canvas _canvas;
 
         private const int AmplitudeScalingFactor = 400;
 
-        public SubBandFilterBankVisualizer(Canvas canvas)
+        public FilterBankVisualizer(Canvas canvas)
         {
             _canvas = canvas;
         }

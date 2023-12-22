@@ -82,7 +82,7 @@
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="DataStructures\FftFrequencyBin.cs" />
     <Compile Include="DataStructures\FrequencyFilter.cs" />
-    <Compile Include="Processor\FrequencySpectrumAggregator.cs" />
+    <Compile Include="Processor\FrequencyBinAggregator.cs" />
     <Compile Include="Processor\IProcessor.cs" />
     <Compile Include="Utils\Enums.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -91,7 +91,7 @@
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Visualizer\CircularWaveVisualizer.cs" />
-    <Compile Include="Visualizer\CircularSubBandFilterBankVisualizer.cs" />
+    <Compile Include="Visualizer\CircularFilterBankVisualizer.cs" />
     <Compile Include="Visualizer\WaveVisualizer.cs" />
     <Compile Include="Visualizer\FrequencyToColorMapper.cs" />
     <Compile Include="Visualizer\FrequencySpectrumVisualizer.cs" />
@@ -100,8 +100,8 @@
     <Compile Include="Visualizer\FrequencyVisualizer.cs" />
     <Compile Include="Visualizer\IVisualizer.cs" />
     <Compile Include="Visualizer\IProcessedFrequencySpectrumVisualizer.cs" />
-    <Compile Include="Visualizer\SubBandFilterBankVisualizer.cs" />
-    <Compile Include="Processor\SubBandFilterBank.cs" />
+    <Compile Include="Visualizer\FilterBankVisualizer.cs" />
+    <Compile Include="Processor\FilterBank.cs" />
     <Page Include="View\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

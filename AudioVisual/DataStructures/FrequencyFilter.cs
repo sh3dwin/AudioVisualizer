@@ -22,8 +22,9 @@ namespace AudioVisual.DataStructures
 
         public FrequencyFilter(IReadOnlyList<FftFrequencyBin> fftValues, double lowerFrequencyBoundary, double upperFrequencyBoundary)
         {
-            var maxFrequency = Constants.SampleRate * 0.5;
-            BinWidth = maxFrequency / fftValues.Count;
+            // TODO: check whether the Nyquist frequency has been reached and set the frequency of the affected bins accordingly
+            const int maxFrequency = Constants.SampleRate;
+            BinWidth = (double)maxFrequency / fftValues.Count;
             var minFrequencyBin = (int)(lowerFrequencyBoundary / BinWidth);
             var maxFrequencyBin = (int)(upperFrequencyBoundary / BinWidth);
 
@@ -79,6 +80,17 @@ namespace AudioVisual.DataStructures
         public float SumOfAbsoluteAmplitudes()
         {
             return Values.Sum(x => Math.Abs(x.Amplitude));
+        }
+
+        public float SumOfFiveBiggestContributingFrequencies()
+        {
+            if (Values.Count < 5)
+                throw new Exception("Frequency filter contains less than 5 frequency bins!");
+
+            var tempList = Values;
+            tempList.Sort((x, y) => (int)(x.Amplitude - y.Amplitude));
+
+            return tempList.GetRange(0, 5).Sum(x => Math.Abs(x.Amplitude));
         }
     }
 }

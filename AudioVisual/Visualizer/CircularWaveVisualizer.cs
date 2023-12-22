@@ -8,10 +8,10 @@ namespace AudioVisual.Visualizer
 {
     public class CircularWaveVisualizer : IProcessedFrequencySpectrumVisualizer
     {
-        private readonly SubBandFilterBank _processor;
-        private readonly CircularSubBandFilterBankVisualizer _visualizer;
+        private readonly FilterBank _processor;
+        private readonly CircularFilterBankVisualizer _visualizer;
 
-        public CircularWaveVisualizer(SubBandFilterBank processor, CircularSubBandFilterBankVisualizer visualizer)
+        public CircularWaveVisualizer(FilterBank processor, CircularFilterBankVisualizer visualizer)
         {
             _processor = processor;
             _visualizer = visualizer;

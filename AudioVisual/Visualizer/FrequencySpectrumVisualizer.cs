@@ -3,79 +3,76 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AudioVisual.Utils;
-using NAudio.Dsp;
 
 namespace AudioVisual.Visualizer
 {
-    /*
-     * Visualizer using frequencies
-     */
     public class FrequencySpectrumVisualizer : IDisposable
     {
-        private Canvas canvas;
+        private readonly Canvas _canvas;
 
-
-        private List<LinkedList<double>> _previousValues;
-        private int _smoothingFactor = 10;
+        private readonly List<LinkedList<double>> _previousValues;
 
         public FrequencySpectrumVisualizer(Canvas canvas)
         {
-            this.canvas = canvas;
+            _canvas = canvas;
             _previousValues = new List<LinkedList<double>>();
         }
-        public Canvas Draw(List<double> amplitudes, List<double> hues)
+        public Canvas Draw(List<double> amplitudes)
         {
             ClearCanvas();
 
-            // Get current width and height in case of resize
-            int windowHeight = (int)canvas.ActualHeight;
-            int windowWidth = (int)canvas.ActualWidth;
+            var windowHeight = (int)_canvas.ActualHeight;
+            var windowWidth = (int)_canvas.ActualWidth;
 
             if (windowHeight == 0 || windowWidth == 0)
-                return canvas;
+                return _canvas;
 
-            double width = (double)windowWidth / amplitudes.Count;
+            var segmentWidth = (double)windowWidth / amplitudes.Count;
 
-            for (int i = 0; i < amplitudes.Count; i++)
+            var hues = FrequencyToColorMapper.GetListOfHues();
+
+            for (var i = 0; i < amplitudes.Count; i++)
             {
-                var currentAmplitude = Math.Abs(windowHeight * amplitudes[i]) * 10;
-                if (_previousValues.Count > i)
-                {
-                    _previousValues[i].AddFirst(currentAmplitude);
-                    _previousValues[i].RemoveLast();
-                }
-                else
-                {
-                    _previousValues.Add(new LinkedList<double>());
-                    for (int j = 0; j < _smoothingFactor; j++)
-                        _previousValues[i].AddFirst(0);
-                }
-                var sumWithPrevious = MathUtils.AddLinkedListElements(_previousValues[i]);
-                var height = sumWithPrevious;
+                var height = GetSmoothedValue(amplitudes[i], i);
                 var color = FrequencyToColorMapper.ColorFromHSV(hues[i], 1, 1);
-                var rect = SoundWaveUtils.CreateRectangle(height, width, new SolidColorBrush(color));
+                var rect = SoundWaveUtils.CreateRectangle(height, segmentWidth, new SolidColorBrush(color));
 
-                canvas.Children.Add(rect);
-                // position the rectangle on the canvas
+                _canvas.Children.Add(rect);
+
                 Canvas.SetTop(rect, windowHeight - rect.Height);
                 Canvas.SetLeft(rect, i * rect.Width);
             }
 
-            return this.canvas;
+            return _canvas;
+        }
+
+        private double GetSmoothedValue(double amplitude, int index)
+        {
+            var currentAmplitude = _canvas.ActualHeight * amplitude * 10;
+            if (_previousValues.Count > index)
+            {
+                _previousValues[index].AddFirst(currentAmplitude);
+                _previousValues[index].RemoveLast();
+            }
+            else
+            {
+                _previousValues.Add(new LinkedList<double>());
+                for (int j = 0; j < Constants.SmoothingFactor; j++)
+                    _previousValues[index].AddFirst(0);
+            }
+            var sumWithPrevious = MathUtils.AddLinkedListElements(_previousValues[index]);
+
+            return sumWithPrevious;
         }
         private void ClearCanvas()
         {
-            canvas.Background = new SolidColorBrush(Color.FromRgb(10, 10, 10));
-            canvas.Children.Clear();
-        }
-        public Canvas Draw(Complex[] frequencySpectrum)
-        {
-            throw new NotImplementedException();
+            _canvas.Background = new SolidColorBrush(Color.FromRgb(10, 10, 10));
+            _canvas.Children.Clear();
         }
 
         public void Dispose()
         {
-            
+            _previousValues.Clear();
         }
     }
 }

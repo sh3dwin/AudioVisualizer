@@ -4,14 +4,14 @@ using AudioVisual.Utils;
 
 namespace AudioVisual.Processor
 {
-    public class SubBandFilterBank : IProcessor
+    public class FilterBank : IProcessor
     {
         private List<int> _bandPassSplits;
         private int _bandPassCount;
 
         private List<FftFrequencyBin> _fftValues;
         
-        public SubBandFilterBank(int bandPassCount = 3)
+        public FilterBank(int bandPassCount = 3)
         {
             _bandPassCount = bandPassCount;
             

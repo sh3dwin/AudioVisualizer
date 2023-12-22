@@ -8,10 +8,10 @@ namespace AudioVisual.Visualizer
 {
     public class WaveVisualizer : IProcessedFrequencySpectrumVisualizer
     {
-        private readonly SubBandFilterBank _processor;
-        private readonly SubBandFilterBankVisualizer _visualizer;
+        private readonly FilterBank _processor;
+        private readonly FilterBankVisualizer _visualizer;
 
-        public WaveVisualizer(SubBandFilterBank processor, SubBandFilterBankVisualizer visualizer)
+        public WaveVisualizer(FilterBank processor, FilterBankVisualizer visualizer)
         {
             _processor = processor;
             _visualizer = visualizer;

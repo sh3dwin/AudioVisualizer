@@ -101,7 +101,7 @@ namespace AudioVisual.ViewModel
                 case Enums.VisualizationMode.Frequency:
                 {
                     _visualizer = new FrequencyVisualizer(
-                        new FrequencySpectrumAggregator(),
+                        new FrequencyBinAggregator(),
                         new FrequencySpectrumVisualizer(_canvas));
                     WavePartitionsBarVisibility = false;
                     break;
@@ -109,16 +109,16 @@ namespace AudioVisual.ViewModel
                 case Enums.VisualizationMode.Circular:
                 {
                     _visualizer = new CircularWaveVisualizer(
-                        new SubBandFilterBank(_wavePartitions),
-                        new CircularSubBandFilterBankVisualizer(_canvas));
+                        new FilterBank(_wavePartitions),
+                        new CircularFilterBankVisualizer(_canvas));
                     WavePartitionsBarVisibility = true;
                     break;
                 }
                 case Enums.VisualizationMode.Wave:
                 {
                     _visualizer = new WaveVisualizer(
-                        new SubBandFilterBank(_wavePartitions),
-                        new SubBandFilterBankVisualizer(_canvas));
+                        new FilterBank(_wavePartitions),
+                        new FilterBankVisualizer(_canvas));
                     WavePartitionsBarVisibility = true;
                     break;
                 }

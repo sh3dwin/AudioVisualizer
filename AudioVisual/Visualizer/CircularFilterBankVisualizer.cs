@@ -10,7 +10,7 @@ using AudioVisual.Utils;
 
 namespace AudioVisual.Visualizer
 {
-    public class CircularSubBandFilterBankVisualizer : IDisposable
+    public class CircularFilterBankVisualizer : IDisposable
     {
         private readonly Canvas _canvas;
 
@@ -18,7 +18,7 @@ namespace AudioVisual.Visualizer
 
         public int InterpolationCount = 5;
 
-        public CircularSubBandFilterBankVisualizer(Canvas canvas)
+        public CircularFilterBankVisualizer(Canvas canvas)
         {
             _canvas = canvas;
         }
