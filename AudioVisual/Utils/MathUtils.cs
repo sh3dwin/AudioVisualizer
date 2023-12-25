@@ -105,7 +105,7 @@ namespace AudioVisual.Utils
             return result;
         }
 
-        public static List<double> NormalizeValues(IReadOnlyList<float> values)
+        public static List<double> NormalizeValues(IReadOnlyList<double> values)
         {
             var maxAmplitude = values.Max(Math.Abs);
             const double epsilon = 1e-3;

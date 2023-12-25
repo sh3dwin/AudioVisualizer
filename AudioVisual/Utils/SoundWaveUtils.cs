@@ -30,12 +30,14 @@ namespace AudioVisual.Utils
         }
         public static Complex[] CreateAndInitializeComplexArray(WaveBuffer buffer, int powerOfTwo)
         {
-            var len = (int)Math.Pow(2, powerOfTwo);
+            var floatBuffer = ConvertBytesToFloats(buffer.ByteBuffer);
+            
+
+            var m = (int)Math.Log(floatBuffer.Length, 2);
+            var len = (int)Math.Pow(2, m);
             var values = new Complex[len];
 
-            var floatBuffer = ConvertBytesToFloats(buffer.ByteBuffer);
-
-            if (len < floatBuffer.Length)
+            if (values.Length < floatBuffer.Length)
             {
                 for (var i = 0; i < len; i++)
                 {

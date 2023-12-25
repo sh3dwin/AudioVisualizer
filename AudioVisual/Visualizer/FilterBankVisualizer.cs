@@ -61,16 +61,16 @@ namespace AudioVisual.Visualizer
             return _canvas;
         }
 
-        private List<Line> DrawWave(IReadOnlyList<float> wave, SolidColorBrush color, double offset)
+        private List<Line> DrawWave(IReadOnlyList<double> wave, SolidColorBrush color, double offset)
         {
             var intervalLength = _canvas.ActualWidth / Constants.SegmentCount;
             var step = wave.Count / Constants.SegmentCount; 
 
-            var y1 = offset;
+            var y1 = offset + wave[0] * AmplitudeScalingFactor;
 
             var lines = new List<Line>(Constants.SegmentCount);
 
-            for (var iSegment = 0; iSegment < Constants.SegmentCount; iSegment++)
+            for (var iSegment = 1; iSegment < Constants.SegmentCount; iSegment++)
             {
                 var line = new Line
                 {

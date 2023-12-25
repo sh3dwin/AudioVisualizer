@@ -29,12 +29,12 @@ namespace AudioVisual.Visualizer
             };
         }
 
-        public static List<double> GetListOfHues()
+        public static List<double> GetListOfHues(int count)
         {
-            const double hueStep = 360.0 / (Constants.SegmentCount);
+            var hueStep = 360.0 / (count);
 
-            var hues = new List<double>(Constants.SegmentCount);
-            for (var iSegment = 0; iSegment < Constants.SegmentCount; iSegment++)
+            var hues = new List<double>(count);
+            for (var iSegment = 0; iSegment < count; iSegment++)
             {
                 hues.Add(hueStep * iSegment);
             }

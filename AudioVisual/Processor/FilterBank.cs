@@ -30,7 +30,7 @@ namespace AudioVisual.Processor
             }
         }
 
-        public List<FrequencyFilter> GetSubBandFilterBank(List<FftFrequencyBin> fftResult)
+        public List<FrequencyFilter> GetFilterBank(List<FftFrequencyBin> fftResult)
         {
             _fftValues = fftResult;
 
@@ -42,7 +42,7 @@ namespace AudioVisual.Processor
             {
                 return new List<FrequencyFilter>
                 {
-                    new(_fftValues, 0, (Constants.SampleRate * 0.5))
+                    new(_fftValues, 0, (Constants.SampleRate / 2.0))
                 };
             }
 

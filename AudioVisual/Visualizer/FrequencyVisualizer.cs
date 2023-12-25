@@ -21,6 +21,12 @@ namespace AudioVisual.Visualizer
             return _visualizer.Draw(aggregatedFrequencies);
         }
 
+        public Canvas Draw(List<double> frequencySpectrum)
+        {
+            var frequencies = _processor.GetFrequencies(frequencySpectrum);
+            return _visualizer.Draw(frequencies);
+        }
+
         public void Dispose()
         {
             _visualizer?.Dispose();

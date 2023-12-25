@@ -16,7 +16,7 @@ namespace AudioVisual.Visualizer
 
         private const double RadiusScalingFactor = 0.3;
 
-        public int InterpolationCount = 5;
+        public int InterpolationCount = 10;
 
         public CircularFilterBankVisualizer(Canvas canvas)
         {
@@ -83,7 +83,7 @@ namespace AudioVisual.Visualizer
             return _canvas;
         }
 
-        private List<Line> DrawCircularWave(IReadOnlyList<float> wave, SolidColorBrush color, double offsetX, double offsetY, double radius)
+        private List<Line> DrawCircularWave(IReadOnlyList<double> wave, SolidColorBrush color, double offsetX, double offsetY, double radius)
         {
             var normalizedValues = MathUtils.NormalizeValues(wave);
             var first = normalizedValues[0];
@@ -101,14 +101,14 @@ namespace AudioVisual.Visualizer
             var y1 =
                 circleCenter.Y + MathUtils.PolarToCartesianCoordinate(0.0, radius + maxFluctuation * normalizedValues[0]).Y;
 
-            var step = wave.Count / (Constants.SegmentCount + InterpolationCount);
-            var angleStep = (Math.PI * 2) / (Constants.SegmentCount + InterpolationCount);
+            var step = wave.Count / (lines.Capacity);
+            var angleStep = (Math.PI * 2) / (lines.Capacity);
 
-            for (var iSegment = 1; iSegment <= (Constants.SegmentCount + InterpolationCount); iSegment++)
+            for (var iSegment = 1; iSegment <= (lines.Capacity); iSegment++)
             {
                 var theta = angleStep * iSegment;
 
-                if (iSegment != (Constants.SegmentCount + InterpolationCount))
+                if (iSegment != (lines.Capacity))
                 {
                     var fluctuation = maxFluctuation * normalizedValues[iSegment * step];
                     var line = new Line
@@ -147,7 +147,7 @@ namespace AudioVisual.Visualizer
 
         private List<double> GetWaveColorSignificance(IReadOnlyList<FrequencyFilter> subBandFilterBank)
         {
-            var listOfSummedAmplitudes = new List<float>(subBandFilterBank.Count);
+            var listOfSummedAmplitudes = new List<double>(subBandFilterBank.Count);
             foreach (var wave in subBandFilterBank)
             {
                 listOfSummedAmplitudes.Add(wave.SumOfAbsoluteAmplitudes());

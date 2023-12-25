@@ -12,9 +12,11 @@ namespace AudioVisual.Processor
 
         public List<double> GetAggregatedFrequencies(List<FftFrequencyBin> fftResult)
         {
-            _fftValues = fftResult;
+            _fftValues?.Clear();
+            _frequencyPartitionsSplits?.Clear();
 
-            _frequencyPartitionsSplits ??= MathUtils.SplitIntoNGeometricSeries(Constants.SegmentCount, (int)(fftResult.Count));
+            _fftValues = fftResult;
+            _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(Constants.SegmentCount, (Constants.SampleRate / 4));
 
             var splitLowerBound = 0;
             var summedFrequencies = new List<double>(Constants.SegmentCount);
@@ -32,7 +34,13 @@ namespace AudioVisual.Processor
 
                 summedFrequencies.Add(sumOfSignificantAmplitudes);
             }
+
             return summedFrequencies;
+        }
+
+        public List<double> GetFrequencies(List<double> fftResult)
+        {
+            return fftResult;
         }
     }
 }

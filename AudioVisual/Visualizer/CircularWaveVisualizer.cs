@@ -20,7 +20,7 @@ namespace AudioVisual.Visualizer
 
         public Canvas Draw(List<FftFrequencyBin> frequencySpectrum)
         {
-            var filterBank = _processor.GetSubBandFilterBank(frequencySpectrum);
+            var filterBank = _processor.GetFilterBank(frequencySpectrum);
             return _visualizer.Draw(filterBank);
         }
 

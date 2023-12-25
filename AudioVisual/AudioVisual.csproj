@@ -75,7 +75,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Analysis\IAudioAnalyzer.cs" />
-    <Compile Include="Analysis\FourierTransform.cs" />
+    <Compile Include="Analysis\FourierTransformAnalyzer.cs" />
     <Compile Include="Audio\IAudioProcessor.cs" />
     <Compile Include="Audio\LoopbackAudioProcessor.cs" />
     <Compile Include="Converters\VisualizationModeConverter.cs" />

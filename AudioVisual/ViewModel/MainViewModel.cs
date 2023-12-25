@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using AudioVisual.Analysis;
 using AudioVisual.Audio;
+using AudioVisual.DataStructures;
 using AudioVisual.Processor;
 using AudioVisual.Utils;
 using AudioVisual.Visualizer;
+using NAudio.Dsp;
 
 namespace AudioVisual.ViewModel
 {
@@ -88,7 +93,21 @@ namespace AudioVisual.ViewModel
         private void DrawBuffer(object sender, EventArgs e)
         {
             var audioData = _recorder.GetAudioData();
-            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, 15);
+            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, Constants.PowerOfTwo);
+            //var doubleSpec = _analyzer.GetFrequencySpectrumAsDoubleArray(audioData, Constants.PowerOfTwo);
+
+            //var reverseFreq = FourierTransformAnalyzer.FrequencySpectrumToTimeDomain(
+            //    doubleSpec.ToArray(),
+            //    Constants.PowerOfTwo);
+
+            //var frequencySpectrumDoubles = _analyzer.GetFrequencySpectrumAsDoubleArray(audioData, Constants.PowerOfTwo);
+            //var frequencySpectrumComplexArray = new List<Complex>(frequencySpectrumDoubles.Count);
+            //frequencySpectrumComplexArray.AddRange(frequencySpectrumDoubles.Select(x => new Complex() { X = x.X, Y = 0}));
+            //var backToWave = FourierTransformAnalyzer.FrequencySpectrumToTimeDomain(frequencySpectrumComplexArray.ToArray(), Constants.PowerOfTwo);
+
+            //var wave = new FrequencyFilter(frequencySpectrum, 0, 24000);
+            //var values = wave.ToPaddedComplexArray(Constants.PowerOfTwo).Select(x => (double)Math.Abs(x.X)).ToList();
+            //var reversefft = FourierTransformAnalyzer.FrequencySpectrumToTimeDomain(wave.ToPaddedComplexArray(Constants.PowerOfTwo), Constants.PowerOfTwo);
 
             Visualization.Dispatcher.Invoke(() => 
                 { Visualization = _visualizer.Draw(frequencySpectrum); });

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using NAudio.Dsp;
 
 namespace AudioVisual.DataStructures
@@ -9,11 +10,14 @@ namespace AudioVisual.DataStructures
         public float Frequency { get; set; }
         public float PhaseShift { get; set; }
 
-        public FftFrequencyBin(Complex fftBin, float frequency)
+        public int BinIndex { get; set; }
+
+        public FftFrequencyBin(Complex fftBin, float frequency, int binIndex)
         {
-            Amplitude = Math.Abs(fftBin.X);
+            Amplitude = (float)(fftBin.X);
             PhaseShift = fftBin.Y;
             Frequency = frequency;
+            BinIndex = binIndex;
         }
 
         public Complex ToComplex()

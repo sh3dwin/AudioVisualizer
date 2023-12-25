@@ -22,27 +22,26 @@ namespace AudioVisual.DataStructures
 
         public FrequencyFilter(IReadOnlyList<FftFrequencyBin> fftValues, double lowerFrequencyBoundary, double upperFrequencyBoundary)
         {
-            // TODO: check whether the Nyquist frequency has been reached and set the frequency of the affected bins accordingly
-            const int maxFrequency = Constants.SampleRate;
-            BinWidth = (double)maxFrequency / fftValues.Count;
-            var minFrequencyBin = (int)(lowerFrequencyBoundary / BinWidth);
-            var maxFrequencyBin = (int)(upperFrequencyBoundary / BinWidth);
+            BinWidth = (double)Constants.SampleRate / fftValues.Count;
 
-            var filteredFrequencies = new List<FftFrequencyBin>(maxFrequencyBin - minFrequencyBin);
+            var lowerBin = (int)(lowerFrequencyBoundary / BinWidth);
+            var upperBin = (int)(upperFrequencyBoundary / BinWidth);
 
-            for (var i = minFrequencyBin; i < maxFrequencyBin; i++)
+            var filteredFrequencies = new List<FftFrequencyBin>(upperBin - lowerBin);
+
+            for (var i = 0; i < fftValues.Count; i++)
             {
-                if (i >= fftValues.Count)
-                    break;
-                filteredFrequencies.Add(fftValues[i]);
+                if (fftValues[i].Frequency > lowerFrequencyBoundary
+                    &&
+                    fftValues[i].Frequency < upperFrequencyBoundary)
+                {
+                    filteredFrequencies.Add(fftValues[i]);
+                }
             }
 
-            // Make sure the frequencies are in ascending order
-            filteredFrequencies.Sort((x, y) => (int)(x.Frequency - y.Frequency));
-
             Values = filteredFrequencies;
+            MaxFrequency = Values[(Values.Count / 2) - 1].Frequency;
             MinFrequency = Values[0].Frequency;
-            MaxFrequency = Values[Values.Count - 1].Frequency;
         }
 
         public Complex[] ToPaddedComplexArray(int m)
@@ -69,7 +68,7 @@ namespace AudioVisual.DataStructures
                 iValues++;
             }
 
-            return result;
+            return result.ToArray();
         }
 
         public double GetAveragedFrequency()
@@ -85,7 +84,9 @@ namespace AudioVisual.DataStructures
         public float SumOfFiveBiggestContributingFrequencies()
         {
             if (Values.Count < 5)
-                throw new Exception("Frequency filter contains less than 5 frequency bins!");
+            {
+                return Values.Sum(x => Math.Abs(x.Amplitude));
+            }
 
             var tempList = Values;
             tempList.Sort((x, y) => (int)(x.Amplitude - y.Amplitude));
