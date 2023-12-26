@@ -15,7 +15,7 @@ namespace AudioVisual.Processor
         {
             _bandPassCount = bandPassCount;
             
-            var maxFrequency = (int)(Constants.SampleRate * 0.5);
+            var maxFrequency = (int)(Constants.SampleRate * 0.25);
             _bandPassSplits = MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
         }
         public int BandPassCount
@@ -24,7 +24,7 @@ namespace AudioVisual.Processor
             set
             {
                 _bandPassCount = value;
-                var maxFrequency = (int)(Constants.SampleRate * 0.5);
+                var maxFrequency = (int)(Constants.SampleRate * 0.25);
                 _bandPassSplits =
                     MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
             }
@@ -42,7 +42,7 @@ namespace AudioVisual.Processor
             {
                 return new List<FrequencyFilter>
                 {
-                    new(_fftValues, 0, (Constants.SampleRate / 2.0))
+                    new(_fftValues, 0, (Constants.SampleRate * 0.25))
                 };
             }
 
@@ -59,7 +59,7 @@ namespace AudioVisual.Processor
             }
 
             var wholeWave = 
-                new FrequencyFilter(_fftValues, 0, (Constants.SampleRate * 0.5));
+                new FrequencyFilter(_fftValues, 1, (Constants.SampleRate * 0.25));
             allFrequencyWindows.Add(wholeWave);
 
             return allFrequencyWindows;

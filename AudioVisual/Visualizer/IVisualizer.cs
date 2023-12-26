@@ -7,6 +7,6 @@ namespace AudioVisual.Visualizer
 {
     public interface IVisualizer
     {
-        public Canvas Draw(List<FftFrequencyBin> frequencySpectrum);
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum);
     }
 }

@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
 using AudioVisual.Analysis;
 using AudioVisual.Audio;
-using AudioVisual.DataStructures;
 using AudioVisual.Processor;
 using AudioVisual.Utils;
 using AudioVisual.Visualizer;
-using NAudio.Dsp;
 
 namespace AudioVisual.ViewModel
 {
@@ -19,13 +13,18 @@ namespace AudioVisual.ViewModel
         // recorder
         private readonly IAudioProcessor _recorder;
         // visualizers
-        private IProcessedFrequencySpectrumVisualizer _visualizer;
+        private IProcessedDataVisualizer _visualizer;
         // analyzer
         private readonly FourierTransformAnalyzer _analyzer;
-        private int _wavePartitions = Constants.DefaultWavePartitions;
+
+        // Canvas
         private Canvas _canvas;
-        private bool _wavePartitionsBarVisibilityVisibility;
+
+        // Options
+        private int _wavePartitions = Constants.DefaultWavePartitions;
+        private bool _wavePartitionsBarVisibility;
         private Enums.VisualizationMode _visualizationMode = Constants.DefaultVisualizationMode;
+
         public MainViewModel(Canvas canvas)
         {
             // Recorder
@@ -38,7 +37,6 @@ namespace AudioVisual.ViewModel
             //Visualizer
             _canvas = canvas;
             VisualizationMode = Constants.DefaultVisualizationMode;
-
         }
 
         public Enums.VisualizationMode VisualizationMode
@@ -64,10 +62,10 @@ namespace AudioVisual.ViewModel
 
         public bool WavePartitionsBarVisibility
         {
-            get => _wavePartitionsBarVisibilityVisibility;
+            get => _wavePartitionsBarVisibility;
             set
             {
-                _wavePartitionsBarVisibilityVisibility = value;
+                _wavePartitionsBarVisibility = value;
                 RaisePropertyChanged();
             }
         }
@@ -94,23 +92,9 @@ namespace AudioVisual.ViewModel
         {
             var audioData = _recorder.GetAudioData();
             var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, Constants.PowerOfTwo);
-            //var doubleSpec = _analyzer.GetFrequencySpectrumAsDoubleArray(audioData, Constants.PowerOfTwo);
-
-            //var reverseFreq = FourierTransformAnalyzer.FrequencySpectrumToTimeDomain(
-            //    doubleSpec.ToArray(),
-            //    Constants.PowerOfTwo);
-
-            //var frequencySpectrumDoubles = _analyzer.GetFrequencySpectrumAsDoubleArray(audioData, Constants.PowerOfTwo);
-            //var frequencySpectrumComplexArray = new List<Complex>(frequencySpectrumDoubles.Count);
-            //frequencySpectrumComplexArray.AddRange(frequencySpectrumDoubles.Select(x => new Complex() { X = x.X, Y = 0}));
-            //var backToWave = FourierTransformAnalyzer.FrequencySpectrumToTimeDomain(frequencySpectrumComplexArray.ToArray(), Constants.PowerOfTwo);
-
-            //var wave = new FrequencyFilter(frequencySpectrum, 0, 24000);
-            //var values = wave.ToPaddedComplexArray(Constants.PowerOfTwo).Select(x => (double)Math.Abs(x.X)).ToList();
-            //var reversefft = FourierTransformAnalyzer.FrequencySpectrumToTimeDomain(wave.ToPaddedComplexArray(Constants.PowerOfTwo), Constants.PowerOfTwo);
 
             Visualization.Dispatcher.Invoke(() => 
-                { Visualization = _visualizer.Draw(frequencySpectrum); });
+                { Visualization = _visualizer.Draw(_canvas, frequencySpectrum); });
         }
 
         private void UpdateVisualizationMode()
@@ -121,7 +105,7 @@ namespace AudioVisual.ViewModel
                 {
                     _visualizer = new FrequencyVisualizer(
                         new FrequencyBinAggregator(),
-                        new FrequencySpectrumVisualizer(_canvas));
+                        new FrequencySpectrumVisualizer());
                     WavePartitionsBarVisibility = false;
                     break;
                 }
@@ -129,7 +113,7 @@ namespace AudioVisual.ViewModel
                 {
                     _visualizer = new CircularWaveVisualizer(
                         new FilterBank(_wavePartitions),
-                        new CircularFilterBankVisualizer(_canvas));
+                        new CircularFilterBankVisualizer());
                     WavePartitionsBarVisibility = true;
                     break;
                 }
@@ -137,7 +121,7 @@ namespace AudioVisual.ViewModel
                 {
                     _visualizer = new WaveVisualizer(
                         new FilterBank(_wavePartitions),
-                        new FilterBankVisualizer(_canvas));
+                        new FilterBankVisualizer());
                     WavePartitionsBarVisibility = true;
                     break;
                 }

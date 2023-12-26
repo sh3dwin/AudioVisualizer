@@ -79,12 +79,15 @@
     <Compile Include="Audio\IAudioProcessor.cs" />
     <Compile Include="Audio\LoopbackAudioProcessor.cs" />
     <Compile Include="Converters\VisualizationModeConverter.cs" />
+    <Compile Include="Providers\VisualizerProvider.cs" />
+    <Compile Include="Settings\ControlSettings.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="DataStructures\FftFrequencyBin.cs" />
     <Compile Include="DataStructures\FrequencyFilter.cs" />
     <Compile Include="Processor\FrequencyBinAggregator.cs" />
     <Compile Include="Processor\IProcessor.cs" />
     <Compile Include="Utils\Enums.cs" />
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\MainView.xaml.cs">
@@ -99,7 +102,7 @@
     <Compile Include="Utils\SoundWaveUtils.cs" />
     <Compile Include="Visualizer\FrequencyVisualizer.cs" />
     <Compile Include="Visualizer\IVisualizer.cs" />
-    <Compile Include="Visualizer\IProcessedFrequencySpectrumVisualizer.cs" />
+    <Compile Include="Visualizer\IProcessedDataVisualizer.cs" />
     <Compile Include="Visualizer\FilterBankVisualizer.cs" />
     <Compile Include="Processor\FilterBank.cs" />
     <Page Include="View\MainView.xaml">

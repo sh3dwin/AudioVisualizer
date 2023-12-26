@@ -5,8 +5,8 @@ using AudioVisual.DataStructures;
 
 namespace AudioVisual.Visualizer
 {
-    public interface IProcessedFrequencySpectrumVisualizer : IDisposable
+    public interface IProcessedDataVisualizer : IDisposable
     {
-        public Canvas Draw(List<FftFrequencyBin> frequencySpectrum);
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum);
     }
 }

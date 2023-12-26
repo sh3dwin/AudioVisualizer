@@ -18,7 +18,7 @@ namespace AudioVisual.Processor
             _fftValues = fftResult;
             _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(Constants.SegmentCount, (Constants.SampleRate / 4));
 
-            var splitLowerBound = 0;
+            var splitLowerBound = 1;
             var summedFrequencies = new List<double>(Constants.SegmentCount);
 
             for (var iSplit = 0; iSplit < Constants.SegmentCount; iSplit++)

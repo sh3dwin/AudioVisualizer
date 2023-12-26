@@ -11,29 +11,26 @@ namespace AudioVisual.Visualizer
 {
     public class FilterBankVisualizer : IDisposable
     {
-        private readonly Canvas _canvas;
 
         private const int AmplitudeScalingFactor = 400;
 
-        public FilterBankVisualizer(Canvas canvas)
+        public Canvas Draw(Canvas canvas, List<FrequencyFilter> subBandFilterBank)
         {
-            _canvas = canvas;
-        }
-
-        public Canvas Draw(List<FrequencyFilter> subBandFilterBank)
-        {
-            ClearCanvas();
+            canvas.Clear();
 
             if (subBandFilterBank[0] is null)
             {
-                return _canvas;
+                return canvas;
             }
 
             var bandPassCount = subBandFilterBank.Count;
             var canvasLines = new List<Line>(subBandFilterBank[0].Values.Count * (bandPassCount) * 2);
 
+            var hues = FrequencyToColorMapper.GetListOfHues(bandPassCount);
+
             // Distance from each separate wave line
-            var yStep = (int)_canvas.ActualHeight / (1 + bandPassCount);
+            var yStep = (int)canvas.ActualHeight / (1 + bandPassCount);
+            var intervalLength = canvas.ActualWidth / Constants.SegmentCount;
 
             for (int iBandPass = 0; iBandPass < bandPassCount; iBandPass++)
             {
@@ -42,28 +39,28 @@ namespace AudioVisual.Visualizer
                 var wave = FourierTransformAnalyzer.ToWave(filter, Constants.PowerOfTwo);
 
                 // Color information
-                var hue = filter.GetAveragedFrequency() * (360.0 / (Constants.SampleRate / 2.0));
-                var color = FrequencyToColorMapper.ColorFromHSV(hue, 1, 1);
+                var hue = hues[iBandPass];
+                var color = FrequencyToColorMapper.ColorFromHsv(hue, 1, 1);
                 var brush = new SolidColorBrush(color);
 
                 // Position
                 var offset = (iBandPass + 1) * yStep;
 
-                var visualizedWave = DrawWave(wave, brush, offset);
+                var visualizedWave = DrawWave(wave, brush, offset, intervalLength);
                 canvasLines.AddRange(visualizedWave);
             }
 
             foreach (var line in canvasLines)
             {
-                _canvas.Children.Add(line);
+                canvas.Children.Add(line);
             }
 
-            return _canvas;
+            return canvas;
         }
 
-        private List<Line> DrawWave(IReadOnlyList<double> wave, SolidColorBrush color, double offset)
+        private List<Line> DrawWave(IReadOnlyList<double> wave, SolidColorBrush color, double offset, double intervalLength)
         {
-            var intervalLength = _canvas.ActualWidth / Constants.SegmentCount;
+            
             var step = wave.Count / Constants.SegmentCount; 
 
             var y1 = offset + wave[0] * AmplitudeScalingFactor;
@@ -87,12 +84,6 @@ namespace AudioVisual.Visualizer
             }
 
             return lines;
-        }
-
-        private void ClearCanvas()
-        {
-            _canvas.Background = new SolidColorBrush(Color.FromRgb(10, 10, 10));
-            _canvas.Children.Clear();
         }
 
         public void Dispose()

@@ -7,7 +7,7 @@ namespace AudioVisual.Visualizer
 {
     public static class FrequencyToColorMapper
     {
-        public static Color ColorFromHSV(double hue, double saturation, double value)
+        public static Color ColorFromHsv(double hue, double saturation, double value)
         {
             var hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
             var f = hue / 60 - Math.Floor(hue / 60);

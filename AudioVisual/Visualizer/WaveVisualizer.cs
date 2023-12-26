@@ -6,7 +6,7 @@ using NAudio.Dsp;
 
 namespace AudioVisual.Visualizer
 {
-    public class WaveVisualizer : IProcessedFrequencySpectrumVisualizer
+    public class WaveVisualizer : IProcessedDataVisualizer
     {
         private readonly FilterBank _processor;
         private readonly FilterBankVisualizer _visualizer;
@@ -18,10 +18,10 @@ namespace AudioVisual.Visualizer
 
         }
 
-        public Canvas Draw(List<FftFrequencyBin> frequencySpectrum)
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum)
         {
             var filterBank = _processor.GetFilterBank(frequencySpectrum);
-            return _visualizer.Draw(filterBank);
+            return _visualizer.Draw(canvas,filterBank);
         }
 
         public void SetBandPassCount(int bandPassCount)

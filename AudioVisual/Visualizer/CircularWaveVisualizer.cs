@@ -1,12 +1,11 @@
 ﻿using AudioVisual.Processor;
 using System.Windows.Controls;
-using NAudio.Dsp;
 using AudioVisual.DataStructures;
 using System.Collections.Generic;
 
 namespace AudioVisual.Visualizer
 {
-    public class CircularWaveVisualizer : IProcessedFrequencySpectrumVisualizer
+    public class CircularWaveVisualizer : IProcessedDataVisualizer
     {
         private readonly FilterBank _processor;
         private readonly CircularFilterBankVisualizer _visualizer;
@@ -18,10 +17,10 @@ namespace AudioVisual.Visualizer
 
         }
 
-        public Canvas Draw(List<FftFrequencyBin> frequencySpectrum)
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum)
         {
             var filterBank = _processor.GetFilterBank(frequencySpectrum);
-            return _visualizer.Draw(filterBank);
+            return _visualizer.Draw(canvas, filterBank);
         }
 
         public void SetBandPassCount(int bandPassCount)

@@ -11,17 +11,31 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
     <Grid>
-        <ContentControl x:Name="Visualizer" Content="{Binding Visualization}" Width="Auto" Height="Auto"/>
-        <Slider Width="200" Minimum="1" Maximum="10" 
-                Value="{Binding WavePartitions}"  
-                Visibility="{Binding WavePartitionsBarVisibility, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        <StackPanel MinWidth="200" MaxWidth="200" HorizontalAlignment="Left">
-            <StackPanel.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="6*"/>
+        </Grid.RowDefinitions>
+        <ContentControl Grid.Row ="1" x:Name="Visualizer" Content="{Binding Visualization}" Width="Auto" Height="Auto"/>
+        
+        <DockPanel Width="Auto" Height="Auto" Background="LightGray">
+            <DockPanel.Resources>
                 <converters:VisualizationModeConverter x:Key="EnumBooleanConverter"/>
-            </StackPanel.Resources>
-            <RadioButton GroupName="visualization" Foreground="AliceBlue"  IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Frequency}">Frequency Visualization</RadioButton>
-            <RadioButton GroupName="visualization" Foreground="AliceBlue" IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Wave}">Wave Visualization</RadioButton>
-            <RadioButton GroupName="visualization" Foreground="AliceBlue" IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Circular}">Circular Harmonics Visualization</RadioButton>
-        </StackPanel>
+            </DockPanel.Resources>
+            <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Margin="10 0">
+                <RadioButton Padding="2" GroupName="visualization" Foreground="Black"  IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Frequency}">Frequency Visualization</RadioButton>
+                <RadioButton Padding="2" GroupName="visualization" Foreground="Black" IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Wave}">Wave Visualization</RadioButton>
+                <RadioButton Padding="2" GroupName="visualization" Foreground="Black" IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Circular}">Circular Harmonics Visualization</RadioButton>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10">
+                <Label Width="180" 
+                       Padding="2" 
+                       HorizontalAlignment="Right"
+                       Visibility="{Binding WavePartitionsBarVisibility, Converter={StaticResource BooleanToVisibilityConverter}}"
+                       Content="Number of wave partitions"/>
+                <Slider Width="200" Padding="2" HorizontalAlignment="Right" Minimum="1" Maximum="10" 
+                        Value="{Binding WavePartitions}"  
+                        Visibility="{Binding WavePartitionsBarVisibility, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </DockPanel>
     </Grid>
 </Window>
