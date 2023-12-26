@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using AudioVisual.Analysis;
 using AudioVisual.Audio;
-using AudioVisual.Processor;
 using AudioVisual.Utils;
 using AudioVisual.Visualizer;
 
@@ -45,7 +44,7 @@ namespace AudioVisual.ViewModel
             set
             {
                 _visualizationMode = value;
-                UpdateVisualizationMode();
+                UpdateUi();
                 RaisePropertyChanged();
             }
         }
@@ -76,10 +75,6 @@ namespace AudioVisual.ViewModel
             set
             {
                 _wavePartitions = value;
-                if (VisualizationMode == Enums.VisualizationMode.Wave)
-                    (_visualizer as WaveVisualizer)?.SetBandPassCount(value);
-                else if (VisualizationMode == Enums.VisualizationMode.Circular)
-                    (_visualizer as CircularWaveVisualizer)?.SetBandPassCount(value);
                 RaisePropertyChanged();
             }
         }
@@ -94,34 +89,27 @@ namespace AudioVisual.ViewModel
             var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, Constants.PowerOfTwo);
 
             Visualization.Dispatcher.Invoke(() => 
-                { Visualization = _visualizer.Draw(_canvas, frequencySpectrum); });
+                { Visualization = _visualizer.Draw(_canvas, frequencySpectrum, _wavePartitions); });
         }
 
-        private void UpdateVisualizationMode()
+        private void UpdateUi()
         {
+            _visualizer = Providers.VisualizerProvider.GetProcessedDataVisualizer(_visualizationMode);
+
             switch (_visualizationMode)
             {
                 case Enums.VisualizationMode.Frequency:
                 {
-                    _visualizer = new FrequencyVisualizer(
-                        new FrequencyBinAggregator(),
-                        new FrequencySpectrumVisualizer());
                     WavePartitionsBarVisibility = false;
                     break;
                 }
                 case Enums.VisualizationMode.Circular:
                 {
-                    _visualizer = new CircularWaveVisualizer(
-                        new FilterBank(_wavePartitions),
-                        new CircularFilterBankVisualizer());
                     WavePartitionsBarVisibility = true;
                     break;
                 }
                 case Enums.VisualizationMode.Wave:
                 {
-                    _visualizer = new WaveVisualizer(
-                        new FilterBank(_wavePartitions),
-                        new FilterBankVisualizer());
                     WavePartitionsBarVisibility = true;
                     break;
                 }

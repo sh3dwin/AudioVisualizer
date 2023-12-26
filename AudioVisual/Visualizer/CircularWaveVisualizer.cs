@@ -7,25 +7,13 @@ namespace AudioVisual.Visualizer
 {
     public class CircularWaveVisualizer : IProcessedDataVisualizer
     {
-        private readonly FilterBank _processor;
-        private readonly CircularFilterBankVisualizer _visualizer;
+        private readonly FilterBank _processor = new();
+        private readonly CircularFilterBankVisualizer _visualizer = new();
 
-        public CircularWaveVisualizer(FilterBank processor, CircularFilterBankVisualizer visualizer)
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum, int wavePartitionsCount)
         {
-            _processor = processor;
-            _visualizer = visualizer;
-
-        }
-
-        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum)
-        {
-            var filterBank = _processor.GetFilterBank(frequencySpectrum);
+            var filterBank = _processor.GetFrequencyFilters(frequencySpectrum, wavePartitionsCount);
             return _visualizer.Draw(canvas, filterBank);
-        }
-
-        public void SetBandPassCount(int bandPassCount)
-        {
-            _processor.BandPassCount = bandPassCount;
         }
 
         public void Dispose()

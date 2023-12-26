@@ -9,6 +9,8 @@ namespace AudioVisual.Processor
         private List<int> _bandPassSplits;
         private int _bandPassCount;
 
+        private List<int> _frequencyPartitionsSplits;
+
         private List<FftFrequencyBin> _fftValues;
         
         public FilterBank(int bandPassCount = 3)
@@ -30,9 +32,10 @@ namespace AudioVisual.Processor
             }
         }
 
-        public List<FrequencyFilter> GetFilterBank(List<FftFrequencyBin> fftResult)
+        public List<FrequencyFilter> GetFrequencyFilters(List<FftFrequencyBin> fftResult, int wavePartitionsCount)
         {
             _fftValues = fftResult;
+            BandPassCount = wavePartitionsCount;
 
             var splitLowerBound = 0;
             var allFrequencyWindows = new List<FrequencyFilter>(_bandPassCount + 1);
@@ -63,6 +66,34 @@ namespace AudioVisual.Processor
             allFrequencyWindows.Add(wholeWave);
 
             return allFrequencyWindows;
+        }
+
+        public List<double> GetAggregatedFrequencies(List<FftFrequencyBin> fftResult)
+        {
+            _fftValues?.Clear();
+            _frequencyPartitionsSplits?.Clear();
+
+            _fftValues = fftResult;
+            _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(Constants.SegmentCount, (Constants.SampleRate / 4));
+
+            var splitLowerBound = 1;
+            var summedFrequencies = new List<double>(Constants.SegmentCount);
+
+            for (var iSplit = 0; iSplit < Constants.SegmentCount; iSplit++)
+            {
+                var lowerFrequencyBoundary = splitLowerBound;
+                var upperFrequencyBoundary = splitLowerBound + _frequencyPartitionsSplits[iSplit];
+                var frequencyFilter =
+                    new FrequencyFilter(_fftValues, lowerFrequencyBoundary, upperFrequencyBoundary);
+
+                var sumOfSignificantAmplitudes = frequencyFilter.SumOfFiveBiggestContributingFrequencies();
+
+                splitLowerBound += _frequencyPartitionsSplits[iSplit];
+
+                summedFrequencies.Add(sumOfSignificantAmplitudes);
+            }
+
+            return summedFrequencies;
         }
     }
 }

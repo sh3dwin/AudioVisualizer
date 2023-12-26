@@ -39,7 +39,6 @@ namespace AudioVisual.Visualizer
 
             var iBandPass = 0;
 
-            var colorValues = GetWaveColorSignificance(subBandFilterBank);
             var hues = FrequencyToColorMapper.GetListOfHues(bandPassCount);
 
             for (var row = 0; row < gridCount && iBandPass < bandPassCount; row++)

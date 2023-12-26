@@ -7,6 +7,6 @@ namespace AudioVisual.Visualizer
 {
     public interface IProcessedDataVisualizer : IDisposable
     {
-        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum);
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum, int wavePartitionsCount);
     }
 }

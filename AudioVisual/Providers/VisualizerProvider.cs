@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using AudioVisual.Processor;
 using AudioVisual.Utils;
 using AudioVisual.Visualizer;
 
@@ -10,9 +9,9 @@ namespace AudioVisual.Providers
     {
         public static Dictionary<Enums.VisualizationMode, IProcessedDataVisualizer> RegisteredVisualizers =
             new Dictionary<Enums.VisualizationMode, IProcessedDataVisualizer>() {
-            {Enums.VisualizationMode.Frequency, new FrequencyVisualizer(new FrequencyBinAggregator(), new FrequencySpectrumVisualizer())},
-            {Enums.VisualizationMode.Circular, new CircularWaveVisualizer(new FilterBank(), new CircularFilterBankVisualizer())},
-            {Enums.VisualizationMode.Circular, new WaveVisualizer(new FilterBank(), new FilterBankVisualizer())}
+            {Enums.VisualizationMode.Frequency, new FrequencyVisualizer()},
+            {Enums.VisualizationMode.Circular, new CircularWaveVisualizer()},
+            {Enums.VisualizationMode.Wave, new WaveVisualizer()}
 
         };
         public static IProcessedDataVisualizer GetProcessedDataVisualizer(Enums.VisualizationMode type)

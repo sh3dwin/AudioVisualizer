@@ -2,31 +2,18 @@
 using System.Windows.Controls;
 using AudioVisual.DataStructures;
 using AudioVisual.Processor;
-using NAudio.Dsp;
 
 namespace AudioVisual.Visualizer
 {
     public class WaveVisualizer : IProcessedDataVisualizer
     {
-        private readonly FilterBank _processor;
-        private readonly FilterBankVisualizer _visualizer;
+        private readonly FilterBank _processor = new();
+        private readonly FilterBankVisualizer _visualizer = new();
 
-        public WaveVisualizer(FilterBank processor, FilterBankVisualizer visualizer)
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum, int wavePartitionsCount)
         {
-            _processor = processor;
-            _visualizer = visualizer;
-
-        }
-
-        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum)
-        {
-            var filterBank = _processor.GetFilterBank(frequencySpectrum);
+            var filterBank = _processor.GetFrequencyFilters(frequencySpectrum, wavePartitionsCount);
             return _visualizer.Draw(canvas,filterBank);
-        }
-
-        public void SetBandPassCount(int bandPassCount)
-        {
-            _processor.BandPassCount = bandPassCount;
         }
 
         public void Dispose()

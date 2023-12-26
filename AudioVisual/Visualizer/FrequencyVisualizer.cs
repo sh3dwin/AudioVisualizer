@@ -7,24 +7,13 @@ namespace AudioVisual.Visualizer
 {
     public class FrequencyVisualizer : IProcessedDataVisualizer
     {
-        private readonly FrequencyBinAggregator _processor;
-        private readonly FrequencySpectrumVisualizer _visualizer;
+        private readonly FilterBank _processor = new();
+        private readonly FrequencySpectrumVisualizer _visualizer = new();
 
-        public FrequencyVisualizer(FrequencyBinAggregator processor, FrequencySpectrumVisualizer visualizer)
-        {
-            _processor = processor;
-            _visualizer = visualizer;
-        }
-        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum)
+        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum, int _)
         {
             var aggregatedFrequencies = _processor.GetAggregatedFrequencies(frequencySpectrum);
             return _visualizer.Draw(canvas, aggregatedFrequencies);
-        }
-
-        public Canvas Draw(Canvas canvas, List<double> frequencySpectrum)
-        {
-            var frequencies = _processor.GetFrequencies(frequencySpectrum);
-            return _visualizer.Draw(canvas, frequencies);
         }
 
         public void Dispose()
