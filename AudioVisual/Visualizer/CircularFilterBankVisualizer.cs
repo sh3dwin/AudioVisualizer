@@ -20,20 +20,20 @@ namespace AudioVisual.Visualizer
         {
         }
 
-        public Canvas Draw(Canvas canvas, List<FrequencyFilter> subBandFilterBank)
+        public Canvas Draw(Canvas canvas, List<List<double>> waves)
         {
             canvas.Clear();
 
-            if (subBandFilterBank[0] is null)
+            if (waves[0] is null)
             {
                 return canvas;
             }
 
-            var bandPassCount = subBandFilterBank.Count;
+            var bandPassCount = waves.Count;
             var canvasLines = new List<Line>((Constants.SegmentCount + InterpolationCount) * bandPassCount);
 
             // Position of circle centers
-            var gridCount = Math.Ceiling(Math.Sqrt(subBandFilterBank.Count));
+            var gridCount = Math.Ceiling(Math.Sqrt(waves.Count));
             var rowDistanceBetweenCircles = canvas.ActualHeight / (gridCount + 1);
             var columnDistanceBetweenCircles = canvas.ActualWidth / (gridCount + 1);
 
@@ -48,8 +48,7 @@ namespace AudioVisual.Visualizer
                 for (var column = 0; column < gridCount && iBandPass < bandPassCount; column++)
                 {
                     // Wave information
-                    var filter = subBandFilterBank[iBandPass];
-                    var wave = FourierTransformAnalyzer.ToWave(filter, Constants.PowerOfTwo);
+                    var wave = waves[iBandPass];
 
                     // Color information
                     var hue = hues[iBandPass];

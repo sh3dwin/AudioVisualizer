@@ -14,17 +14,17 @@ namespace AudioVisual.Visualizer
 
         private const int AmplitudeScalingFactor = 400;
 
-        public Canvas Draw(Canvas canvas, List<FrequencyFilter> subBandFilterBank)
+        public Canvas Draw(Canvas canvas, List<List<double>> waves)
         {
             canvas.Clear();
 
-            if (subBandFilterBank[0] is null)
+            if (waves[0] is null)
             {
                 return canvas;
             }
 
-            var bandPassCount = subBandFilterBank.Count;
-            var canvasLines = new List<Line>(subBandFilterBank[0].Values.Count * (bandPassCount) * 2);
+            var bandPassCount = waves.Count;
+            var canvasLines = new List<Line>(waves[0].Count * (bandPassCount) * 2);
 
             var hues = FrequencyToColorMapper.GetListOfHues(bandPassCount);
 
@@ -35,8 +35,7 @@ namespace AudioVisual.Visualizer
             for (int iBandPass = 0; iBandPass < bandPassCount; iBandPass++)
             {
                 // Wave information
-                var filter = subBandFilterBank[iBandPass];
-                var wave = FourierTransformAnalyzer.ToWave(filter, Constants.PowerOfTwo);
+                var wave = waves[iBandPass];
 
                 // Color information
                 var hue = hues[iBandPass];

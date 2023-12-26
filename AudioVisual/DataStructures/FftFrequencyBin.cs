@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using NAudio.Dsp;
+﻿using NAudio.Dsp;
 
 namespace AudioVisual.DataStructures
 {

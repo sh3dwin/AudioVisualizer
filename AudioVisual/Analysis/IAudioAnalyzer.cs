@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AudioVisual.DataStructures;
-using NAudio.Dsp;
 using NAudio.Wave;
 
 namespace AudioVisual.Analysis
 {
     public interface IAudioAnalyzer
     {
-        public List<FftFrequencyBin> GetFrequencySpectrum(WaveBuffer audioData, int m);
+        public List<FftFrequencyBin> Analyze(WaveBuffer audioData, int m);
+        public List<double> Synthesize(FrequencyFilter filter, int m);
     }
 }

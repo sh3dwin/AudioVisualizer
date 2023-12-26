@@ -86,7 +86,7 @@ namespace AudioVisual.ViewModel
         private void DrawBuffer(object sender, EventArgs e)
         {
             var audioData = _recorder.GetAudioData();
-            var frequencySpectrum = _analyzer.GetFrequencySpectrum(audioData, Constants.PowerOfTwo);
+            var frequencySpectrum = _analyzer.Analyze(audioData, Constants.PowerOfTwo);
 
             Visualization.Dispatcher.Invoke(() => 
                 { Visualization = _visualizer.Draw(_canvas, frequencySpectrum, _wavePartitions); });

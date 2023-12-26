@@ -10,25 +10,16 @@ namespace AudioVisual.Analysis
 {
     public class FourierTransformAnalyzer : IAudioAnalyzer
     {
-        public List<FftFrequencyBin> GetFrequencySpectrum(WaveBuffer buffer, int m)
+        public List<FftFrequencyBin> Analyze(WaveBuffer buffer, int m)
         {
             var audioData = SoundWaveUtils.CreateAndInitializeComplexArray(buffer, m);
             FastFourierTransform.FFT(true, m, audioData);
 
             // return the transformed data
-            return ConvertToFftFrequencyBins(audioData);
+            return ToBins(audioData);
         }
 
-        public List<Complex> GetFrequencySpectrumAsDoubleArray(WaveBuffer buffer, int m)
-        {
-            var audioData = SoundWaveUtils.CreateAndInitializeComplexArray(buffer, m);
-            FastFourierTransform.FFT(true, m, audioData);
-
-            // return the transformed data
-            return audioData.ToList();
-        }
-
-        public static List<FftFrequencyBin> ConvertToFftFrequencyBins(Complex[] fftData)
+        private static List<FftFrequencyBin> ToBins(Complex[] fftData)
         {
             var count = fftData.Length;
 
@@ -39,10 +30,10 @@ namespace AudioVisual.Analysis
             // Add frequencies in ascending order in the first half of the discrete fourier
             for (var i = 0; i < count; i++)
             {
-                var frequency = (float)binWidthInFrequency * i;
+                var frequency = binWidthInFrequency * i;
                 if (i > count / 2)
                 {
-                    frequency = (float)(Constants.SampleRate - frequency);
+                    frequency = (Constants.SampleRate - frequency);
                 }
                 
                 fftFrequencyBins.Add(new FftFrequencyBin(fftData[i], frequency, i));
@@ -51,7 +42,16 @@ namespace AudioVisual.Analysis
             return fftFrequencyBins;
         }
 
-        public static List<double> FrequencySpectrumToTimeDomain(Complex[] frequencySpectrum, int m)
+        public List<double> Synthesize(FrequencyFilter filter, int m)
+        {
+            var wholeFrequencySpectrum = filter.ToPaddedComplexArray(m);
+
+            var waveAmplitudes = ReverseFft(wholeFrequencySpectrum, m);
+
+            return waveAmplitudes;
+        }
+
+        private List<double> ReverseFft(Complex[] frequencySpectrum, int m)
         {
             if (frequencySpectrum.Length != (int)Math.Pow(2, m))
             {
@@ -63,15 +63,6 @@ namespace AudioVisual.Analysis
             FastFourierTransform.FFT(false, m, timeDomainBuffer);
 
             return timeDomainBuffer.Select(x => (double)x.X).ToList().GetRange(0, timeDomainBuffer.Length / 2);
-        }
-
-        public static List<double> ToWave(FrequencyFilter filter, int m)
-        {
-            var wholeFrequencySpectrum = filter.ToPaddedComplexArray(m);
-
-            var waveAmplitudes = FrequencySpectrumToTimeDomain(wholeFrequencySpectrum, m);
-
-            return waveAmplitudes;
         }
     }
 }
