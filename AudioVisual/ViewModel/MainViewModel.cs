@@ -14,7 +14,7 @@ namespace AudioVisual.ViewModel
         // Canvas
         private Canvas _canvas;
         // Options
-        private readonly UIOptions _options;
+        private readonly UiOptions _options;
 
         public MainViewModel(Canvas canvas)
         {
@@ -22,7 +22,7 @@ namespace AudioVisual.ViewModel
             _recorder = new LoopbackAudioRecorder();
             _recorder.DataAvailableEvent += DrawBuffer;
 
-            _options = new UIOptions();
+            _options = new UiOptions();
 
             _canvas = canvas;
         }

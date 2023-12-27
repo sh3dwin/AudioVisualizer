@@ -17,7 +17,7 @@ namespace AudioVisual.Processor
         {
             _bandPassCount = bandPassCount;
             
-            var maxFrequency = (int)(Globals.SampleRate * 0.25);
+            var maxFrequency = (int)(Globals.SampleRate * Constants.FrequencyFraction);
             _bandPassSplits = MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
         }
         public int BandPassCount
@@ -26,7 +26,7 @@ namespace AudioVisual.Processor
             set
             {
                 _bandPassCount = value;
-                var maxFrequency = (int)(Globals.SampleRate * 0.25);
+                var maxFrequency = (int)(Globals.SampleRate * Constants.FrequencyFraction);
                 _bandPassSplits =
                     MathUtils.SplitIntoNGeometricSeries(_bandPassCount, maxFrequency);
             }
@@ -45,7 +45,7 @@ namespace AudioVisual.Processor
             {
                 return new List<FrequencyFilter>
                 {
-                    new(_fftValues, 0, (Globals.SampleRate * 0.25))
+                    new(_fftValues, 0, (Globals.SampleRate * Constants.FrequencyFraction))
                 };
             }
 
@@ -62,7 +62,7 @@ namespace AudioVisual.Processor
             }
 
             var wholeWave = 
-                new FrequencyFilter(_fftValues, 1, (Globals.SampleRate * 0.25));
+                new FrequencyFilter(_fftValues, 1, (Globals.SampleRate * Constants.FrequencyFraction));
             allFrequencyWindows.Add(wholeWave);
 
             return allFrequencyWindows;
@@ -74,7 +74,9 @@ namespace AudioVisual.Processor
             _frequencyPartitionsSplits?.Clear();
 
             _fftValues = fftResult;
-            _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(Constants.SegmentCount, (Globals.SampleRate / 4));
+
+            var size = (int)(Globals.SampleRate * Constants.FrequencyFraction);
+            _frequencyPartitionsSplits = MathUtils.SplitIntoNGeometricSeries(Constants.SegmentCount, size);
 
             var splitLowerBound = 1;
             var summedFrequencies = new List<double>(Constants.SegmentCount);
@@ -86,7 +88,7 @@ namespace AudioVisual.Processor
                 var frequencyFilter =
                     new FrequencyFilter(_fftValues, lowerFrequencyBoundary, upperFrequencyBoundary);
 
-                var sumOfSignificantAmplitudes = frequencyFilter.SumOfFiveBiggestContributingFrequencies();
+                var sumOfSignificantAmplitudes = frequencyFilter.SumOfSignificantAmplitudes();
 
                 splitLowerBound += _frequencyPartitionsSplits[iSplit];
 

@@ -76,16 +76,17 @@ namespace AudioVisual.Visualizer
         }
 
 
-        private List<Line> ToCircle(IReadOnlyList<double> lineData)
+        private static List<Line> ToCircle(IReadOnlyList<double> lineData)
         {
             var lines = new List<Line>();
 
             var maxFluctuation = lineData.Max() * 0.5;
 
-            var x1 =
-                MathUtils.PolarToCartesianCoordinate(0.0, 1 + maxFluctuation * lineData[0]).X;
-            var y1 =
-                MathUtils.PolarToCartesianCoordinate(0.0, 1 + maxFluctuation * lineData[0]).Y;
+            var fluctuationFirst = 1 + maxFluctuation * lineData[0];
+            var pointFirst = new Point(fluctuationFirst, 0).PolarToCartesian();
+
+            var x1 = pointFirst.X;
+            var y1 = pointFirst.Y;
 
             var angleStep = (Math.PI * 2) / (lineData.Count);
 
@@ -95,13 +96,16 @@ namespace AudioVisual.Visualizer
 
                 if (iSegment != (lineData.Count))
                 {
-                    var fluctuation = lineData[iSegment];
+
+                    var fluctuation = 1 + maxFluctuation * lineData[iSegment];
+                    var point = new Point(fluctuation, theta).PolarToCartesian();
+
                     var line = new Line
                     {
                         X1 = x1,
                         Y1 = y1,
-                        X2 = MathUtils.PolarToCartesianCoordinate(theta, 1 + maxFluctuation * fluctuation).X,
-                        Y2 = MathUtils.PolarToCartesianCoordinate(theta, 1 + maxFluctuation * fluctuation).Y,
+                        X2 = point.X,
+                        Y2 = point.Y
                     };
 
                     lines.Add(line);
@@ -111,12 +115,14 @@ namespace AudioVisual.Visualizer
                 }
                 else
                 {
+                    var fluctuation = 1 + maxFluctuation * lineData[0];
+                    var point = new Point(fluctuation, theta).PolarToCartesian();
                     var line = new Line
                     {
                         X1 = x1,
                         Y1 = y1,
-                        X2 = MathUtils.PolarToCartesianCoordinate(theta, 1 + maxFluctuation * lineData[0]).X,
-                        Y2 = MathUtils.PolarToCartesianCoordinate(theta, 1 + maxFluctuation * lineData[0]).Y,
+                        X2 = point.X,
+                        Y2 = point.Y
                     };
 
                     lines.Add(line);

@@ -19,9 +19,9 @@ namespace AudioVisual.Analyzers
             return ToBins(audioData);
         }
 
-        private static List<FftFrequencyBin> ToBins(Complex[] fftData)
+        private static List<FftFrequencyBin> ToBins(IReadOnlyList<Complex> fftData)
         {
-            var count = fftData.Length;
+            var count = fftData.Count;
 
             var fftFrequencyBins = new List<FftFrequencyBin>(count);
 
@@ -51,14 +51,14 @@ namespace AudioVisual.Analyzers
             return waveAmplitudes;
         }
 
-        private List<double> ReverseFft(Complex[] frequencySpectrum, int m)
+        private static List<double> ReverseFft(IReadOnlyList<Complex> frequencySpectrum, int m)
         {
-            if (frequencySpectrum.Length != (int)Math.Pow(2, m))
+            if (frequencySpectrum.Count != (int)Math.Pow(2, m))
             {
                 throw new Exception("Size mismatch in FFT array size. Must be power of 2!");
             }
 
-            var timeDomainBuffer = (Complex[])frequencySpectrum.Clone();
+            var timeDomainBuffer = frequencySpectrum.ToArray();
 
             FastFourierTransform.FFT(false, m, timeDomainBuffer);
 

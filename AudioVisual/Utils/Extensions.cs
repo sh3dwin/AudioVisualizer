@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -83,14 +82,6 @@ namespace AudioVisual.Utils
             return lines;
         }
 
-        public static List<Line> ScaleFromCenter(this List<Line> lines, Point center, double scaleX = 0.0, double scaleY = 0.0)
-        {
-            return lines
-                .Offset(-center.X, -center.Y)
-                .Scale(scaleX, scaleY)
-                .Offset(center.X, center.Y);
-        }
-
         public static List<double> NormalizeValues(this IReadOnlyList<double> values)
         {
             var maxValue = values.Max(Math.Abs);
@@ -124,7 +115,7 @@ namespace AudioVisual.Utils
         {
             foreach (var line in lines)
             {
-                line.Stroke = line.Stroke is null ? color : line.Stroke;
+                line.Stroke ??= color;
                 line.StrokeThickness = thickness;
             }
 

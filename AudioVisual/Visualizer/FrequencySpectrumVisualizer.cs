@@ -40,34 +40,31 @@ namespace AudioVisual.Visualizer
             var drawingLayouts = new List<DrawingLayoutData>(layoutCount);
             // Position
             var scaleX = width / Constants.SegmentCount;
-            var scaleY = height;
 
             for (var iLayout = 0; iLayout < layoutCount; iLayout++)
             {
-                var startX = 0.0;
-                var startY = height;
-                var center = new Point(startX, startY);
+                const double startX = 0.0;
+                var center = new Point(startX, height);
 
                 // Color information
                 var hue = FrequencyToColorMapper.GetListOfHues(layoutCount)[iLayout];
                 var color = FrequencyToColorMapper.ColorFromHsv(hue, 1, 1);
                 var brush = new SolidColorBrush(color);
 
-                var layout = new DrawingLayoutData(center, scaleX, scaleY, brush);
+                var layout = new DrawingLayoutData(center, scaleX, height, brush);
                 drawingLayouts.Add(layout);
             }
 
             return drawingLayouts;
         }
 
-        private List<Line> ToColorGradientLines(IReadOnlyList<double> lineData)
+        private static List<Line> ToColorGradientLines(IReadOnlyList<double> lineData)
         {
             var y1 = lineData[0];
 
             var lines = new List<Line>(Constants.SegmentCount);
 
             var hues = FrequencyToColorMapper.GetListOfHues(Constants.SegmentCount);
-
 
             for (var iSegment = 1; iSegment < Constants.SegmentCount; iSegment++)
             {

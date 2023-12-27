@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AudioVisual.DataStructures
 {
-    public class UIOptions
+    public class UiOptions
     {
         // Options
         public int WavePartitions;
@@ -18,7 +18,7 @@ namespace AudioVisual.DataStructures
             {Enums.VisualizationMode.Frequency, false}
         };
 
-        public UIOptions(
+        public UiOptions(
             int wavePartitions = Constants.DefaultWavePartitions,
             bool wavePartitionsBarVisibility = Constants.DefaultWavePartitionsBarVisibility,
             Enums.VisualizationMode visualizationMode = Constants.DefaultVisualizationMode)

@@ -4,17 +4,15 @@ using System.Runtime.CompilerServices;
 
 namespace AudioVisual.ViewModel
 {
-    public class ViewModelBase : INotifyPropertyChanged, IDisposable
+    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public virtual void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+
+        public abstract void Dispose();
     }
 }

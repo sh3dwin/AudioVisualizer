@@ -70,14 +70,9 @@ namespace AudioVisual.DataStructures
             return result.ToArray();
         }
 
-        public float SumOfAbsoluteAmplitudes()
+        public float SumOfSignificantAmplitudes(int count = Constants.DefaultSignificantAmplitudesCount)
         {
-            return Values.Sum(x => Math.Abs(x.Amplitude));
-        }
-
-        public float SumOfFiveBiggestContributingFrequencies()
-        {
-            if (Values.Count < 5)
+            if (Values.Count < count)
             {
                 return Values.Sum(x => Math.Abs(x.Amplitude));
             }
@@ -85,7 +80,7 @@ namespace AudioVisual.DataStructures
             var tempList = Values;
             tempList.Sort((x, y) => (int)(x.Amplitude - y.Amplitude));
 
-            return tempList.GetRange(0, 5).Sum(x => Math.Abs(x.Amplitude));
+            return tempList.GetRange(0, count).Sum(x => Math.Abs(x.Amplitude));
         }
     }
 }

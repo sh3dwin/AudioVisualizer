@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using NAudio.Dsp;
 
 namespace AudioVisual.Utils
 {
@@ -37,20 +38,23 @@ namespace AudioVisual.Utils
 
         public static double BinarySearchCoefficient(double largerThan, double smallerThan, int n, int size)
         {
-            var coefficient = (smallerThan + largerThan) * 0.5;
-            var sum = GeometricSeriesSum(coefficient, n);
-            if (Math.Abs(size - sum) < 5)
-                return coefficient;
-
-            if (sum > size)
+            while (true)
             {
-                var lowerSum = GeometricSeriesSum(largerThan, n);
-                if (lowerSum > size)
-                    largerThan -= 0.001;
-                return BinarySearchCoefficient(largerThan, coefficient, n, size);
+                var coefficient = (smallerThan + largerThan) * 0.5;
+                var sum = GeometricSeriesSum(coefficient, n);
+                if (Math.Abs(size - sum) < 5) return coefficient;
+
+                if (sum > size)
+                {
+                    var lowerSum = GeometricSeriesSum(largerThan, n);
+                    if (lowerSum > size) largerThan -= 0.001;
+                    smallerThan = coefficient;
+                }
+                else
+                {
+                    largerThan = coefficient;
+                }
             }
-            else
-                return BinarySearchCoefficient(coefficient, smallerThan, n, size);
         }
 
         public static double GeometricSeriesSum(double coefficient, int n)
@@ -58,27 +62,10 @@ namespace AudioVisual.Utils
             return (Math.Pow(coefficient, n + 1) - 1) / (coefficient - 1);
         }
 
-        public static double AddLinkedListElements(LinkedList<double> list)
+        public static Point PolarToCartesian(this Point point)
         {
-            var firstWeight = 0.4;
-            var weight = (1 - firstWeight) / (list.Count - 1);
-            
-            double sum = 0;
-            var current = list.First;
-            sum += current.Value * firstWeight;
-            current = current.Next;
-            while (current != null)
-            {
-                sum += current.Value * weight;
-                current = current.Next;
-            }
-            return sum;
-        }
-
-        public static Point PolarToCartesianCoordinate(double theta, double radius)
-        {
-            var x = radius * Math.Cos(theta);
-            var y = radius * Math.Sin(theta);
+            var x = point.X * Math.Cos(point.Y);
+            var y = point.X * Math.Sin(point.Y);
             var result = new Point(x, y);
             return result;
         }

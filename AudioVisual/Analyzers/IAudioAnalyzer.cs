@@ -6,7 +6,7 @@ namespace AudioVisual.Analyzers
 {
     public interface IAudioAnalyzer
     {
-        public List<FftFrequencyBin> Analyze(WaveBuffer audioData, int m);
-        public List<double> Synthesize(FrequencyFilter filter, int m);
+        List<FftFrequencyBin> Analyze(WaveBuffer audioData, int m);
+        List<double> Synthesize(FrequencyFilter filter, int m);
     }
 }

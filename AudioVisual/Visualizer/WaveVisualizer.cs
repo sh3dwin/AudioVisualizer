@@ -43,7 +43,7 @@ namespace AudioVisual.Visualizer
 
             for (var iLayout = 0; iLayout < layoutCount; iLayout++)
             {
-                var startX = 0.0;
+                const double startX = 0.0;
                 var startY = (iLayout + 1.0) * yStep;
                 var center = new Point(startX, startY);
 
@@ -59,7 +59,7 @@ namespace AudioVisual.Visualizer
             return drawingLayouts;
         }
 
-        private List<Line> ToLines(IReadOnlyList<double> lineData)
+        private static List<Line> ToLines(IReadOnlyList<double> lineData)
         {
             var y1 = lineData[0];
 

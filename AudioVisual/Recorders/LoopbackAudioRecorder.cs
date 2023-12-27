@@ -16,7 +16,7 @@ namespace AudioVisual.Recorders
 
             Capture.DataAvailable += DataAvailable;
 
-            Capture.RecordingStopped += (s, a) => { Capture.Dispose(); };
+            Capture.RecordingStopped += (_, _) => { Capture.Dispose(); };
 
             Capture.StartRecording();
         }

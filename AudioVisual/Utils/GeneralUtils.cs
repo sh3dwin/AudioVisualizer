@@ -40,17 +40,5 @@ namespace AudioVisual.Utils
 
             return values;
         }
-
-        public static Rectangle CreateRectangle(double height, double width, SolidColorBrush brush)
-        {
-            var rect = new Rectangle
-            {
-                Fill = brush,
-                Height = height,
-                Width = width
-            };
-
-            return rect;
-        }
     }
 }
