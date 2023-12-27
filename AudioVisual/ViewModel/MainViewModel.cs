@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using AudioVisual.Analyzers;
-using AudioVisual.AudioVisualConverters;
+using AudioVisual.DataStructures;
 using AudioVisual.Recorders;
 using AudioVisual.Utils;
 
@@ -11,18 +11,10 @@ namespace AudioVisual.ViewModel
     {
         // recorder
         private readonly IAudioRecorder _recorder;
-        // visualizers
-        private IFilterBankConverter _converter;
-        // analyzer
-        private readonly FourierTransformAnalyzer _analyzer;
-
         // Canvas
         private Canvas _canvas;
-
         // Options
-        private int _wavePartitions = Constants.DefaultWavePartitions;
-        private bool _wavePartitionsBarVisibility;
-        private Enums.VisualizationMode _visualizationMode = Constants.DefaultVisualizationMode;
+        private readonly UIOptions _options;
 
         public MainViewModel(Canvas canvas)
         {
@@ -30,21 +22,18 @@ namespace AudioVisual.ViewModel
             _recorder = new LoopbackAudioRecorder();
             _recorder.DataAvailableEvent += DrawBuffer;
 
-            // Analyzer
-            _analyzer = new FourierTransformAnalyzer();
+            _options = new UIOptions();
 
-            //Visualizer
             _canvas = canvas;
-            VisualizationMode = Constants.DefaultVisualizationMode;
         }
 
         public Enums.VisualizationMode VisualizationMode
         {
-            get => _visualizationMode;
+            get => _options.VisualizationMode;
             set
             {
-                _visualizationMode = value;
-                UpdateUi();
+                _options.VisualizationMode = value;
+                _options.Update();
                 RaisePropertyChanged();
             }
         }
@@ -61,20 +50,20 @@ namespace AudioVisual.ViewModel
 
         public bool WavePartitionsBarVisibility
         {
-            get => _wavePartitionsBarVisibility;
+            get => _options.WavePartitionsBarVisibility;
             set
             {
-                _wavePartitionsBarVisibility = value;
+                _options.WavePartitionsBarVisibility = value;
                 RaisePropertyChanged();
             }
         }
 
         public int WavePartitions
         {
-            get => _wavePartitions;
+            get => _options.WavePartitions;
             set
             {
-                _wavePartitions = value;
+                _options.WavePartitions = value;
                 RaisePropertyChanged();
             }
         }
@@ -87,13 +76,13 @@ namespace AudioVisual.ViewModel
         {
             var audioData = _recorder.GetAudioData();
 
-            var frequencySpectrum = _analyzer.Analyze(audioData, Constants.PowerOfTwo);
+            var analyzer = new FourierTransformAnalyzer();
+            var frequencySpectrum = analyzer.Analyze(audioData, Constants.PowerOfTwo);
 
-            var visualizationData = _converter.Convert(_analyzer, frequencySpectrum, _wavePartitions);
+            var converter = Providers.ConverterProvider.GetConverter(VisualizationMode);
+            var visualizationData = converter.Convert(analyzer, frequencySpectrum, WavePartitions);
 
-            var visualizer = Providers.VisualizerProvider.GetVisualizer(_converter);
-
-            
+            var visualizer = Providers.VisualizerProvider.GetVisualizer(converter);
 
             Visualization.Dispatcher.Invoke(() =>
             {
@@ -103,32 +92,6 @@ namespace AudioVisual.ViewModel
 
                 drawables.ForEach(drawable => Visualization.Children.Add(drawable));
             });
-        }
-
-        private void UpdateUi()
-        {
-            _converter = Providers.ConverterProvider.GetConverter(_visualizationMode);
-
-            switch (_visualizationMode)
-            {
-                case Enums.VisualizationMode.Frequency:
-                    {
-                        WavePartitionsBarVisibility = false;
-                        break;
-                    }
-                case Enums.VisualizationMode.Circular:
-                    {
-                        WavePartitionsBarVisibility = true;
-                        break;
-                    }
-                case Enums.VisualizationMode.Wave:
-                    {
-                        WavePartitionsBarVisibility = true;
-                        break;
-                    }
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }
