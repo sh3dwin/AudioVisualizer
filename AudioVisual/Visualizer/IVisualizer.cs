@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Controls;
-using AudioVisual.DataStructures;
+using System.Windows.Shapes;
 
 namespace AudioVisual.Visualizer
 {
     public interface IVisualizer
     {
-        public Canvas Draw(Canvas canvas, List<FftFrequencyBin> frequencySpectrum);
+        public List<Shape> GetDrawables(
+            List<List<double>> visualizationData,
+            int waveCount,
+            double width,
+            double height);
     }
 }

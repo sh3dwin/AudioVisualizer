@@ -2,7 +2,7 @@
 using AudioVisual.DataStructures;
 using NAudio.Wave;
 
-namespace AudioVisual.Analysis
+namespace AudioVisual.Analyzers
 {
     public interface IAudioAnalyzer
     {

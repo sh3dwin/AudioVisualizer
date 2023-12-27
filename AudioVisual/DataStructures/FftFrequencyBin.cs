@@ -12,7 +12,7 @@ namespace AudioVisual.DataStructures
 
         public FftFrequencyBin(Complex fftBin, float frequency, int binIndex)
         {
-            Amplitude = (float)(fftBin.X);
+            Amplitude = fftBin.X;
             PhaseShift = fftBin.Y;
             Frequency = frequency;
             BinIndex = binIndex;
@@ -22,8 +22,8 @@ namespace AudioVisual.DataStructures
         {
             return new Complex()
             {
-                X = (float)Amplitude,
-                Y = (float)PhaseShift
+                X = Amplitude,
+                Y = PhaseShift
             };
         }
     }

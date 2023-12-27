@@ -6,13 +6,13 @@ using AudioVisual.Utils;
 using NAudio.Dsp;
 using NAudio.Wave;
 
-namespace AudioVisual.Analysis
+namespace AudioVisual.Analyzers
 {
     public class FourierTransformAnalyzer : IAudioAnalyzer
     {
         public List<FftFrequencyBin> Analyze(WaveBuffer buffer, int m)
         {
-            var audioData = SoundWaveUtils.CreateAndInitializeComplexArray(buffer, m);
+            var audioData = GeneralUtils.CreateAndInitializeComplexArray(buffer);
             FastFourierTransform.FFT(true, m, audioData);
 
             // return the transformed data
@@ -25,7 +25,7 @@ namespace AudioVisual.Analysis
 
             var fftFrequencyBins = new List<FftFrequencyBin>(count);
 
-            var binWidthInFrequency = (float)(Constants.SampleRate) / (count);
+            var binWidthInFrequency = (float)(Globals.SampleRate) / (count);
 
             // Add frequencies in ascending order in the first half of the discrete fourier
             for (var i = 0; i < count; i++)
@@ -33,7 +33,7 @@ namespace AudioVisual.Analysis
                 var frequency = binWidthInFrequency * i;
                 if (i > count / 2)
                 {
-                    frequency = (Constants.SampleRate - frequency);
+                    frequency = (Globals.SampleRate - frequency);
                 }
                 
                 fftFrequencyBins.Add(new FftFrequencyBin(fftData[i], frequency, i));

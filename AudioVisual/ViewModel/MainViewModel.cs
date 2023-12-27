@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Windows.Controls;
-using AudioVisual.Analysis;
-using AudioVisual.Audio;
+using AudioVisual.Analyzers;
+using AudioVisual.AudioVisualConverters;
+using AudioVisual.Recorders;
 using AudioVisual.Utils;
-using AudioVisual.Visualizer;
 
 namespace AudioVisual.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
         // recorder
-        private readonly IAudioProcessor _recorder;
+        private readonly IAudioRecorder _recorder;
         // visualizers
-        private IProcessedDataVisualizer _visualizer;
+        private IFilterBankConverter _converter;
         // analyzer
         private readonly FourierTransformAnalyzer _analyzer;
 
@@ -27,7 +27,7 @@ namespace AudioVisual.ViewModel
         public MainViewModel(Canvas canvas)
         {
             // Recorder
-            _recorder = new LoopbackAudioProcessor();
+            _recorder = new LoopbackAudioRecorder();
             _recorder.DataAvailableEvent += DrawBuffer;
 
             // Analyzer
@@ -86,33 +86,46 @@ namespace AudioVisual.ViewModel
         private void DrawBuffer(object sender, EventArgs e)
         {
             var audioData = _recorder.GetAudioData();
+
             var frequencySpectrum = _analyzer.Analyze(audioData, Constants.PowerOfTwo);
 
-            Visualization.Dispatcher.Invoke(() => 
-                { Visualization = _visualizer.Draw(_canvas, frequencySpectrum, _wavePartitions); });
+            var visualizationData = _converter.Convert(_analyzer, frequencySpectrum, _wavePartitions);
+
+            var visualizer = Providers.VisualizerProvider.GetVisualizer(_converter);
+
+            
+
+            Visualization.Dispatcher.Invoke(() =>
+            {
+                var drawables = visualizer.GetDrawables(visualizationData, WavePartitions, Visualization.ActualWidth, Visualization.ActualHeight);
+
+                Visualization.Clear();
+
+                drawables.ForEach(drawable => Visualization.Children.Add(drawable));
+            });
         }
 
         private void UpdateUi()
         {
-            _visualizer = Providers.VisualizerProvider.GetProcessedDataVisualizer(_visualizationMode);
+            _converter = Providers.ConverterProvider.GetConverter(_visualizationMode);
 
             switch (_visualizationMode)
             {
                 case Enums.VisualizationMode.Frequency:
-                {
-                    WavePartitionsBarVisibility = false;
-                    break;
-                }
+                    {
+                        WavePartitionsBarVisibility = false;
+                        break;
+                    }
                 case Enums.VisualizationMode.Circular:
-                {
-                    WavePartitionsBarVisibility = true;
-                    break;
-                }
+                    {
+                        WavePartitionsBarVisibility = true;
+                        break;
+                    }
                 case Enums.VisualizationMode.Wave:
-                {
-                    WavePartitionsBarVisibility = true;
-                    break;
-                }
+                    {
+                        WavePartitionsBarVisibility = true;
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException();
             }

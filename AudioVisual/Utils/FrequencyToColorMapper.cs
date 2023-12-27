@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace AudioVisual.Visualizer
+namespace AudioVisual.Utils
 {
     public static class FrequencyToColorMapper
     {

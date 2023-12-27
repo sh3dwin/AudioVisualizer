@@ -22,17 +22,16 @@ namespace AudioVisual.DataStructures
 
         public FrequencyFilter(IReadOnlyList<FftFrequencyBin> fftValues, double lowerFrequencyBoundary, double upperFrequencyBoundary)
         {
-            BinWidth = (double)Constants.SampleRate / fftValues.Count;
+            BinWidth = (double)Globals.SampleRate / fftValues.Count;
 
             var lowerBin = (int)(lowerFrequencyBoundary / BinWidth);
             var upperBin = (int)(upperFrequencyBoundary / BinWidth);
 
             var filteredFrequencies = new List<FftFrequencyBin>(upperBin - lowerBin);
 
-            for (var i = 0; i < fftValues.Count; i++)
+            for (var i = lowerBin; i < fftValues.Count; i++)
             {
-                if (fftValues[i].Frequency > lowerFrequencyBoundary
-                    &&
+                if (fftValues[i].Frequency > lowerFrequencyBoundary &&
                     fftValues[i].Frequency < upperFrequencyBoundary)
                 {
                     filteredFrequencies.Add(fftValues[i]);
@@ -69,11 +68,6 @@ namespace AudioVisual.DataStructures
             }
 
             return result.ToArray();
-        }
-
-        public double GetAveragedFrequency()
-        {
-            return (MaxFrequency + MinFrequency) * 0.5;
         }
 
         public float SumOfAbsoluteAmplitudes()

@@ -74,36 +74,38 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Analysis\IAudioAnalyzer.cs" />
-    <Compile Include="Analysis\FourierTransformAnalyzer.cs" />
-    <Compile Include="Audio\IAudioProcessor.cs" />
-    <Compile Include="Audio\LoopbackAudioProcessor.cs" />
-    <Compile Include="Converters\VisualizationModeConverter.cs" />
+    <Compile Include="Analyzers\IAudioAnalyzer.cs" />
+    <Compile Include="Analyzers\FourierTransformAnalyzer.cs" />
+    <Compile Include="DataStructures\DrawingLayoutData.cs" />
+    <Compile Include="Providers\ConverterProvider.cs" />
+    <Compile Include="Recorders\IAudioRecorder.cs" />
+    <Compile Include="Recorders\LoopbackAudioRecorder.cs" />
+    <Compile Include="Visualizer\VisualizerAbstract.cs" />
+    <Compile Include="WPFConverters\VisualizationModeConverter.cs" />
     <Compile Include="Providers\VisualizerProvider.cs" />
-    <Compile Include="Settings\ControlSettings.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="DataStructures\FftFrequencyBin.cs" />
     <Compile Include="DataStructures\FrequencyFilter.cs" />
-    <Compile Include="Processor\FrequencyBinAggregator.cs" />
     <Compile Include="Processor\IProcessor.cs" />
     <Compile Include="Utils\Enums.cs" />
     <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\Globals.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AudioVisualConverters\CircularWaveConverter.cs" />
     <Compile Include="Visualizer\CircularWaveVisualizer.cs" />
-    <Compile Include="Visualizer\CircularFilterBankVisualizer.cs" />
-    <Compile Include="Visualizer\WaveVisualizer.cs" />
-    <Compile Include="Visualizer\FrequencyToColorMapper.cs" />
+    <Compile Include="AudioVisualConverters\WaveConverter.cs" />
+    <Compile Include="Utils\FrequencyToColorMapper.cs" />
     <Compile Include="Visualizer\FrequencySpectrumVisualizer.cs" />
     <Compile Include="Utils\MathUtils.cs" />
-    <Compile Include="Utils\SoundWaveUtils.cs" />
-    <Compile Include="Visualizer\FrequencyVisualizer.cs" />
+    <Compile Include="Utils\GeneralUtils.cs" />
+    <Compile Include="AudioVisualConverters\FrequencyConverter.cs" />
     <Compile Include="Visualizer\IVisualizer.cs" />
-    <Compile Include="Visualizer\IProcessedDataVisualizer.cs" />
-    <Compile Include="Visualizer\FilterBankVisualizer.cs" />
+    <Compile Include="AudioVisualConverters\IAudioVisualConverter.cs" />
+    <Compile Include="Visualizer\WaveVisualizer.cs" />
     <Compile Include="Processor\FilterBank.cs" />
     <Page Include="View\MainView.xaml">
       <SubType>Designer</SubType>

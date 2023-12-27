@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using AudioVisual.Utils;
+using AudioVisual.AudioVisualConverters;
 using AudioVisual.Visualizer;
 
 namespace AudioVisual.Providers
 {
     public static class VisualizerProvider
     {
-        public static Dictionary<Enums.VisualizationMode, IProcessedDataVisualizer> RegisteredVisualizers =
-            new Dictionary<Enums.VisualizationMode, IProcessedDataVisualizer>() {
-            {Enums.VisualizationMode.Frequency, new FrequencyVisualizer()},
-            {Enums.VisualizationMode.Circular, new CircularWaveVisualizer()},
-            {Enums.VisualizationMode.Wave, new WaveVisualizer()}
+        public static Dictionary<Type, VisualizerAbstract> RegisteredVisualizers =
+            new() {
+            {typeof(FrequencyConverter), new FrequencySpectrumVisualizer()},
+            {typeof(WaveConverter), new WaveVisualizer()},
+            {typeof(CircularWaveConverter), new CircularWaveVisualizer()}
 
         };
-        public static IProcessedDataVisualizer GetProcessedDataVisualizer(Enums.VisualizationMode type)
+        public static IVisualizer GetVisualizer(IFilterBankConverter converter)
         {
+            var type = converter.GetType();
             if (!RegisteredVisualizers.ContainsKey(type))
-                throw new Exception("The requested ProcessedDataVisualizer does not exist!");
+                throw new Exception("The requested Visualizer does not exist!");
 
             return RegisteredVisualizers[type];
         }
