@@ -13,9 +13,10 @@ namespace AudioVisual.DataStructures
 
         private readonly Dictionary<Enums.VisualizationMode, bool> _barVisibility = new()
         {
-            {Enums.VisualizationMode.Circular, true},
+            {Enums.VisualizationMode.CircularWave, true},
             {Enums.VisualizationMode.Wave, true},
-            {Enums.VisualizationMode.Frequency, false}
+            {Enums.VisualizationMode.Frequency, false},
+            {Enums.VisualizationMode.CircularFrequency, false}
         };
 
         public UiOptions(

@@ -76,11 +76,13 @@
     </ApplicationDefinition>
     <Compile Include="Analyzers\IAudioAnalyzer.cs" />
     <Compile Include="Analyzers\FourierTransformAnalyzer.cs" />
+    <Compile Include="AudioVisualConverters\CircularFrequencyConverter.cs" />
     <Compile Include="DataStructures\DrawingLayoutData.cs" />
     <Compile Include="DataStructures\UiOptions.cs" />
     <Compile Include="Providers\ConverterProvider.cs" />
     <Compile Include="Recorders\IAudioRecorder.cs" />
     <Compile Include="Recorders\LoopbackAudioRecorder.cs" />
+    <Compile Include="Visualizer\CircularFrequencyVisualizer.cs" />
     <Compile Include="Visualizer\VisualizerAbstract.cs" />
     <Compile Include="WPFConverters\VisualizationModeConverter.cs" />
     <Compile Include="Providers\VisualizerProvider.cs" />
@@ -100,7 +102,7 @@
     <Compile Include="Visualizer\CircularWaveVisualizer.cs" />
     <Compile Include="AudioVisualConverters\WaveConverter.cs" />
     <Compile Include="Utils\FrequencyToColorMapper.cs" />
-    <Compile Include="Visualizer\FrequencySpectrumVisualizer.cs" />
+    <Compile Include="Visualizer\FrequencyVisualizer.cs" />
     <Compile Include="Utils\MathUtils.cs" />
     <Compile Include="Utils\GeneralUtils.cs" />
     <Compile Include="AudioVisualConverters\FrequencyConverter.cs" />

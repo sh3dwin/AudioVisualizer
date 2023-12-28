@@ -10,8 +10,9 @@ namespace AudioVisual.Providers
         public static Dictionary<Enums.VisualizationMode, IFilterBankConverter> RegisteredConverters =
             new() {
                 {Enums.VisualizationMode.Frequency, new FrequencyConverter()},
-                {Enums.VisualizationMode.Circular, new CircularWaveConverter()},
-                {Enums.VisualizationMode.Wave, new WaveConverter()}
+                {Enums.VisualizationMode.CircularWave, new CircularWaveConverter()},
+                {Enums.VisualizationMode.Wave, new WaveConverter()},
+                {Enums.VisualizationMode.CircularFrequency, new CircularFrequencyConverter()}
 
             };
         public static IFilterBankConverter GetConverter(Enums.VisualizationMode type)

@@ -8,7 +8,7 @@ using AudioVisual.Utils;
 
 namespace AudioVisual.Visualizer
 {
-    public class FrequencySpectrumVisualizer : VisualizerAbstract
+    public class FrequencyVisualizer : VisualizerAbstract
     {
         protected override List<List<Line>> DrawLines(List<List<double>> visualizationData)
 

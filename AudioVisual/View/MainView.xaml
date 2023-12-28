@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:AudioVisual"
              xmlns:wpfConverters="clr-namespace:AudioVisual.WPFConverters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,15 +15,15 @@
             <RowDefinition Height="8*"/>
         </Grid.RowDefinitions>
         <ContentControl Grid.Row ="1" x:Name="Visualizer" Content="{Binding Visualization}" Width="Auto" Height="Auto"/>
-        
         <DockPanel Width="Auto" Height="Auto" Background="LightGray">
             <DockPanel.Resources>
                 <wpfConverters:VisualizationModeConverter x:Key="EnumBooleanConverter"/>
             </DockPanel.Resources>
             <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Margin="10 0">
                 <RadioButton Padding="2" GroupName="visualization" Foreground="Black"  IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Frequency}">Frequency Visualization</RadioButton>
+                <RadioButton Padding="2" GroupName="visualization" Foreground="Black"  IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=CircularFrequency}">Circular Frequency Visualization</RadioButton>
                 <RadioButton Padding="2" GroupName="visualization" Foreground="Black" IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Wave}">Wave Visualization</RadioButton>
-                <RadioButton Padding="2" GroupName="visualization" Foreground="Black" IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Circular}">Circular Harmonics Visualization</RadioButton>
+                <RadioButton Padding="2" GroupName="visualization" Foreground="Black" IsChecked="{Binding Path=VisualizationMode, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=CircularWave}">Circular Harmonics Harmonics Visualization</RadioButton>
             </StackPanel>
             <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10">
                 <Label Width="180" 

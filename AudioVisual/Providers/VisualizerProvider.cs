@@ -9,7 +9,8 @@ namespace AudioVisual.Providers
     {
         public static Dictionary<Type, VisualizerAbstract> RegisteredVisualizers =
             new() {
-            {typeof(FrequencyConverter), new FrequencySpectrumVisualizer()},
+            {typeof(FrequencyConverter), new FrequencyVisualizer()},
+            {typeof(CircularFrequencyConverter), new CircularFrequencyVisualizer()},
             {typeof(WaveConverter), new WaveVisualizer()},
             {typeof(CircularWaveConverter), new CircularWaveVisualizer()}
 

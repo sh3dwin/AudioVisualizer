@@ -5,8 +5,9 @@
         public enum VisualizationMode
         {
             Wave,
-            Circular,
-            Frequency
+            CircularWave,
+            Frequency,
+            CircularFrequency
         }
     }
 }
